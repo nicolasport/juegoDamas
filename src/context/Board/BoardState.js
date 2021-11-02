@@ -79,7 +79,7 @@ const BoardState = (props) => {
     });
 
     const virtualMemo = state.memo;
-    console.log(`virtualMemo=> ${virtualMemo}`);
+    console.log(`state.timePlayer=> ${state.timePlayer}`);
     virtualMemo[state.selectedDisc.x][state.selectedDisc.y] = 0;
     virtualMemo[state.placeToMov.x][state.placeToMov.y] = state.timePlayer;
     endTurn();

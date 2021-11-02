@@ -22,7 +22,7 @@ export const Board = (props) => {
     useEffect(()=> {
         //console.log('avaliablePlaces: ', avaliablePlaces)
         //console.log('Memo: ', memo)
-        setMemoGame(memo)
+        //setMemoGame(memo)
     }, [avaliablePlaces, memo, placeToMov])
 
 

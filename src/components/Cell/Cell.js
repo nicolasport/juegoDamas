@@ -41,8 +41,8 @@ export const Cell = (props) => {
     }
 
     const handleClickCell = () => {
-        movDisc(posX, posY)
         console.log(`MOVIMIENTO: ${posX} - ${posY}` )
+        movDisc(posX, posY)
     }
 
     if(avaliablePlaces){
