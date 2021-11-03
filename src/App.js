@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import Board from './components/Board';
 import history from '~/history';
 import BoardState from '~/context/Board/BoardState';
-
+// THIS
 class App extends React.Component {
   constructor(props) {
     super(props);

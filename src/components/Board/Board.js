@@ -11,19 +11,19 @@ export const Board = (props) => {
         sizeBoardX,
         cellSize,
         memo,
-        avaliablePlaces,
-        placeToMov,
+        avaliablePlaces: availablePlaces,
         movDisc,
         checkMovement,
         selectedDisc,
-        checkPlayerTurn
+        checkPlayerTurn,
+        timePlayer,
     } = useContext(BoardContext);
 
     useEffect(()=> {
-        //console.log('avaliablePlaces: ', avaliablePlaces)
-        //console.log('Memo: ', memo)
-        //setMemoGame(memo)
-    }, [avaliablePlaces, memo, placeToMov])
+        if(selectedDisc.x !== null){
+            checkMovement('peon')
+        }
+    }, [selectedDisc])
 
 
     const styleBoard = {
@@ -31,20 +31,33 @@ export const Board = (props) => {
             height: `${sizeBoardX*cellSize}px`,
         }
 
-    return (
+        const render =
+            <>
             <ul className={'boneBoard'} style={styleBoard}>
-
                 {memo.map((row, indexRow) =>
-                    row.map((col, indexCol) =>
-                        //{console.log(`(${indexRow},${indexCol}) ==> ${col}`)}
-                        <Cell posX={indexRow} posY={indexCol} casillaSize={cellSize} avaliablePlaces={avaliablePlaces} movDisc={movDisc}>
-                            {col !== 0 ?
-                                <Disc rol={'peon'} color={col} posX={indexRow} posY={indexCol} casillaSize={cellSize} checkMovement={checkMovement} selectedDisc={selectedDisc} checkPlayerTurn={checkPlayerTurn}/> : ''}
-                        </Cell>
+                row.map((col, indexCol) =>
+                    <Cell key={`Cell>${indexRow}-${indexCol}`}
+                          posX={indexRow}
+                          posY={indexCol}
+                          cellSize={cellSize}
+                          avaliablePlaces={availablePlaces}
+                          movDisc={movDisc}
+                          memo={memo}
+                          selectedDisc={selectedDisc}
+                          playerColor={timePlayer}
+                    >
+
+                        {col !== 0 ?
+                            <Disc key={`Disc>${indexRow}-${indexCol}`} rol={'peon'} color={col} posX={indexRow} posY={indexCol} cellSize={cellSize} checkMovement={checkMovement} selectedDisc={selectedDisc} checkPlayerTurn={checkPlayerTurn} /> : ''}
+                    </Cell>
                     )
                 )}
-
             </ul>
-    )
+            </>
+
+
+
+    return render
+
 
 }

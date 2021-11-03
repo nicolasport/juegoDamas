@@ -1,21 +1,20 @@
 /* eslint-disable */
-import React, {Fragment, useContext, useEffect} from 'react';
+import PropTypes from 'prop-types'; // ES6
+import React, {useEffect, useCallback} from 'react';
 import '~/scss/Cell.scss'
-import BoardContext from "~/context/Board/BoardContext";
 
 export const Cell = (props) => {
 
 
-    const {posX, posY, casillaSize, children, avaliablePlaces, movDisc} = props
+    const {posX, posY, cellSize, children, avaliablePlaces, movDisc, memo, selectedDisc, playerColor} = props
 
     useEffect(() => {
-        //console.log("AAV: ", avaliablePlaces)
-    },avaliablePlaces,posX, posY,movDisc)
+    },[])
 
     function checkpair(row, col, avaliablePlaces) {
-        var cell = {
-            width: `${casillaSize}px`,
-            height: `${casillaSize}px`,
+        let cell = {
+            width: `${cellSize}px`,
+            height: `${cellSize}px`,
             boxShadow: 'none'
         }
         if (row %  2 === 0) {
@@ -34,21 +33,19 @@ export const Cell = (props) => {
             cell.boxShadow = 'inset 0px 0px 10px #56ff00'
             cell.cursor = 'pointer'
 
-            console.log(cell)
+            //console.log(cell)
         }
 
         return cell
     }
 
-    const handleClickCell = () => {
-        console.log(`MOVIMIENTO: ${posX} - ${posY}` )
-        movDisc(posX, posY)
-    }
+    const handleClickCell = useCallback(() => {
+        movDisc(posX, posY, memo, selectedDisc, playerColor)
+    },[memo, selectedDisc, playerColor])
 
     if(avaliablePlaces){
         const color = checkpair(posX, posY, avaliablePlaces[posX][posY])
 
-        avaliablePlaces[posX][posY] === 'g' ? console.log(avaliablePlaces) : ''
         return (
             avaliablePlaces[posX][posY] === 'g'
                 ?   <li onClick={()=> handleClickCell()} className={'boneCell'} style={color} key={`${posX}-${posY}`}>{children}</li>
@@ -57,8 +54,20 @@ export const Cell = (props) => {
         )
     }else{
         const color = checkpair(posX, posY)
+
         return (
             <li className={'boneCell'} style={color} key={`${posX}-${posY}`}>{children}</li>
         )
     }
+}
+
+Cell.propTypes = {
+    posX: PropTypes.number,
+    posY: PropTypes.number,
+    cellSize: PropTypes.number,
+    avaliablePlaces: PropTypes.array,
+    movDisc: PropTypes.func.isRequired,
+    memo: PropTypes.array,
+    selectedDisc: PropTypes.object,
+    playerColor: PropTypes.string,
 }

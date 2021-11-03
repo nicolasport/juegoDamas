@@ -5,11 +5,11 @@ import BoardContext from "~/context/Board/BoardContext";
 
 export const Disc = (props) => {
 
-   const {color, casillaSize, posY, posX, rol, checkMovement, selectedDisc, checkPlayerTurn} = props
+   const {color, cellSize, posY, posX, rol, checkMovement, selectedDisc, checkPlayerTurn} = props
 
     useEffect(() =>{
-        checkMovement(rol)
-    },[selectedDisc])
+
+    },[])
 
     const handleClick = (x, y) => {
         checkPlayerTurn(color, x, y, rol)
@@ -18,8 +18,8 @@ export const Disc = (props) => {
     const styleFicha = (color) => {
         const style = {
             background: 'black',
-            height: `${casillaSize-25}px`,
-            width: `${casillaSize-25}px`,
+            height: `${cellSize-25}px`,
+            width: `${cellSize-25}px`,
 
         }
         switch (color) {

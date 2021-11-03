@@ -1,17 +1,20 @@
-import React, { useReducer } from 'react';
-import BoardReducer from './BoardReducer';
+import React from 'react';
+
 import BoardContext from '~/context/Board/BoardContext';
+import useBoard from '~/Hook/UseBoard';
+
 
 const BoardState = (props) => {
   // BOARD GENERATOR FUNCTION
   const { children } = props;
+
 
   const initialState = {
     memo: [
       [0, 'w', 0, 'w', 0, 'w', 0, 'w', 0, 'w'],
       ['w', 0, 'w', 0, 'w', 0, 'w', 0, 'w', 0],
       [0, 'w', 0, 'w', 0, 'w', 0, 'w', 0, 'w'],
-      [0, 0, 'b', 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       ['b', 0, 'b', 0, 'b', 0, 'b', 0, 'b', 0],
       [0, 'b', 0, 'b', 0, 'b', 0, 'b', 0, 'b'],
@@ -33,18 +36,11 @@ const BoardState = (props) => {
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ],
-    placeToMov: { x: null, y: null },
   };
+  const [state, dispatch] = useBoard();
 
-  // REDUCER
-  const [state, dispatch] = useReducer(BoardReducer, initialState);
 
   const endTurn = () => {
-    // placeToMov
-    dispatch({
-      type: 'SET_NEW_MOV',
-      payload: { x: null, y: null },
-    });
     let playerToPlay = null;
     if (state.timePlayer === 'w') {
       playerToPlay = 'b';
@@ -66,22 +62,21 @@ const BoardState = (props) => {
       payload: { x: null, y: null, rol: null },
     });
   };
-
-  const movDisc = (newX, newY) => {
-    console.log(`movDisc: newX=> ${newX}, newY=>${newY}`);
-    console.log(`state.selectedDisc.x=> ${state.selectedDisc.x}`);
-    console.log(`state.selectedDisc.y=> ${state.selectedDisc.y}`);
-    console.log(`state.timePlayer=> ${state.timePlayer}`);
-
-    dispatch({
-      type: 'SET_NEW_MOV',
-      payload: { x: newX, y: newY },
-    });
-
+  /*
+  const EatOpponentDisc = (x, y) => {
     const virtualMemo = state.memo;
-    console.log(`state.timePlayer=> ${state.timePlayer}`);
-    virtualMemo[state.selectedDisc.x][state.selectedDisc.y] = 0;
-    virtualMemo[state.placeToMov.x][state.placeToMov.y] = state.timePlayer;
+    console.log(`EAT OPPONNENT: ${virtualMemo[x][y]}`);
+    virtualMemo[x][y] = 0;
+    dispatch({
+      type: 'SET_BOARD_MOV',
+      payload: virtualMemo,
+    });
+  };
+   */
+  const movDisc = (newX, newY, memo, selectedDisc, playerColor) => {
+    const virtualMemo = memo;
+    virtualMemo[selectedDisc.x][selectedDisc.y] = 0;
+    virtualMemo[newX][newY] = playerColor;
     endTurn();
     // ADHIERER EL MOVIMIENTO A LA MATRIZ
     dispatch({
@@ -89,12 +84,13 @@ const BoardState = (props) => {
       payload: virtualMemo,
     });
   };
+
   // MOVIMINETO DE PEON
   const peonMov = () => {
+    const VirtualAvPlaces = state.avaliablePlaces;
+    // BLANCO
     if (state.timePlayer === 'w') {
-      // BLANCO
-      // izq
-      const avPlaces = state.avaliablePlaces;
+      // IZQ
       if (state.selectedDisc.y - 1 >= 0 && state.selectedDisc.x + 1 <= state.sizeBoardY && state.selectedDisc.y !== null) { // si no se pasa del tablero
         // SI HAY LUGAR LIBRE
         if (state.memo[state.selectedDisc.x + 1][state.selectedDisc.y - 1] === 0) {
@@ -102,76 +98,52 @@ const BoardState = (props) => {
             x: state.selectedDisc.x + 1,
             y: state.selectedDisc.y - 1,
           };
-          avPlaces[left.x][left.y] = 'g';
-          dispatch({
-            type: 'SET_AVALIABLE_PLACES',
-            payload: avPlaces,
-          });
+          VirtualAvPlaces[left.x][left.y] = 'g';
         } else if (state.memo[state.selectedDisc.x + 1][state.selectedDisc.y - 1] === 'b' && state.memo[state.selectedDisc.x + 2][state.selectedDisc.y - 2] === 0) {
-          avPlaces[state.selectedDisc.x + 2][state.selectedDisc.y - 2] = 'g';
-          dispatch({
-            type: 'SET_AVALIABLE_PLACES',
-            payload: avPlaces,
-          });
+          // TODO chequear si come ficha
+          VirtualAvPlaces[state.selectedDisc.x + 2][state.selectedDisc.y - 2] = 'g';
         }
       }
-      // derecha
-      if (state.selectedDisc.y + 1 <= state.sizeBoardX && state.selectedDisc.x + 1 <= state.sizeBoardY && state.selectedDisc.y !== null) { // si no se pasa del tablero
+      // DERECHA
+      if (state.selectedDisc.y + 1 <= state.sizeBoardY && state.selectedDisc.x + 1 <= state.sizeBoardY && state.selectedDisc.y !== null) { // si no se pasa del tablero
         if (state.memo[state.selectedDisc.x + 1][state.selectedDisc.y + 1] === 0) {
           const right = {
             x: state.selectedDisc.x + 1,
             y: state.selectedDisc.y + 1,
           };
-          avPlaces[right.x][right.y] = 'g';
+          VirtualAvPlaces[right.x][right.y] = 'g';
         } else if (state.memo[state.selectedDisc.x + 1][state.selectedDisc.y + 1] === 'b' && state.memo[state.selectedDisc.x + 2][state.selectedDisc.y + 2] === 0) {
-          avPlaces[state.selectedDisc.x + 2][state.selectedDisc.y + 2] = 'g';
-          dispatch({
-            type: 'SET_AVALIABLE_PLACES',
-            payload: avPlaces,
-          });
+          VirtualAvPlaces[state.selectedDisc.x + 2][state.selectedDisc.y + 2] = 'g';
         }
       }
-    } else { // NEGRO
-      const avPlaces = state.avaliablePlaces;
+    } /* NEGRO */ else {
       // IZQ
-      // si no se pasa del tablero
       if (state.selectedDisc.y - 1 >= 0 && state.selectedDisc.x - 1 >= 0 && state.selectedDisc.y !== null) {
         // SI HAY LUGAR LIBRE
         if (state.memo[state.selectedDisc.x - 1][state.selectedDisc.y - 1] === 0) {
-          const left = {
-            x: state.selectedDisc.x - 1,
-            y: state.selectedDisc.y - 1,
-          };
-          avPlaces[left.x][left.y] = 'g';
-          dispatch({
-            type: 'SET_AVALIABLE_PLACES',
-            payload: avPlaces,
-          });
+          const left = { x: state.selectedDisc.x - 1, y: state.selectedDisc.y - 1 };
+          VirtualAvPlaces[left.x][left.y] = 'g';
         } else if (state.memo[state.selectedDisc.x - 1][state.selectedDisc.y - 1] === 'w' && state.memo[state.selectedDisc.x - 2][state.selectedDisc.y - 2] === 0) {
-          avPlaces[state.selectedDisc.x - 2][state.selectedDisc.y - 2] = 'g';
-          dispatch({
-            type: 'SET_AVALIABLE_PLACES',
-            payload: avPlaces,
-          });
+          VirtualAvPlaces[state.selectedDisc.x - 2][state.selectedDisc.y - 2] = 'g';
         }
       }
-      // derecha
-      if (state.selectedDisc.y + 1 <= state.sizeBoardX && state.selectedDisc.x - 1 >= 0 && state.selectedDisc.y !== null) { // si no se pasa del tablero
+      // DERECHA
+      if (state.selectedDisc.y + 1 <= state.sizeBoardY && state.selectedDisc.x - 1 >= 0 && state.selectedDisc.y !== null) {
         if (state.memo[state.selectedDisc.x - 1][state.selectedDisc.y + 1] === 0) {
           const right = {
             x: state.selectedDisc.x - 1,
             y: state.selectedDisc.y + 1,
           };
-          avPlaces[right.x][right.y] = 'g';
+          VirtualAvPlaces[right.x][right.y] = 'g';
         } else if (state.memo[state.selectedDisc.x - 1][state.selectedDisc.y + 1] === 'w' && state.memo[state.selectedDisc.x - 2][state.selectedDisc.y + 2] === 0) {
-          avPlaces[state.selectedDisc.x - 2][state.selectedDisc.y + 2] = 'g';
-          dispatch({
-            type: 'SET_AVALIABLE_PLACES',
-            payload: avPlaces,
-          });
+          VirtualAvPlaces[state.selectedDisc.x - 2][state.selectedDisc.y + 2] = 'g';
         }
       }
     }
+    dispatch({
+      type: 'SET_AVALIABLE_PLACES',
+      payload: VirtualAvPlaces,
+    });
   };
 
   // PINTA LUGARES A MOVER
@@ -191,12 +163,9 @@ const BoardState = (props) => {
         type: 'SET_SELECTED_DISC',
         payload: { x, y, rol },
       });
-
-
-      return true;
+      return;
     }
-    console.log('NO ES VALIDO');
-    return false;
+    alert(`TURNO DEL JUGADOR ${state.timePlayer === 'w' ? 'BLANCO' : 'NEGRO'}`);
   };
 
   /*
@@ -209,6 +178,7 @@ const BoardState = (props) => {
   return (
     <BoardContext.Provider value={
         {
+          VirtualState: state,
           memo: state.memo,
           sizeBoardX: state.sizeBoardX,
           sizeBoardY: state.sizeBoardY,

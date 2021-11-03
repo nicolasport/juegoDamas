@@ -3,7 +3,6 @@ export default (state, action) => {
 
   switch (type) {
     case 'SET_SELECTED_DISC':
-      console.log('payload:', payload);
       return {
         ...state,
         selectedDisc: payload,
@@ -18,11 +17,7 @@ export default (state, action) => {
         ...state,
         timePlayer: payload,
       };
-    case 'SET_NEW_MOV':
-      return {
-        ...state,
-        placeToMov: payload,
-      };
+
     case 'SET_BOARD_MOV':
       return {
         ...state,
