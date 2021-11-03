@@ -5,10 +5,9 @@ import BoardContext from "~/context/Board/BoardContext";
 
 export const Disc = (props) => {
 
-   const {color, cellSize, posY, posX, rol, checkMovement, selectedDisc, checkPlayerTurn} = props
+   const {color, cellSize, pos, rol, checkPlayerTurn} = props
 
     useEffect(() =>{
-
     },[])
 
     const handleClick = (x, y) => {
@@ -23,11 +22,11 @@ export const Disc = (props) => {
 
         }
         switch (color) {
-            case 'w':
+            case 'white':
                 style.background = 'white'
 
                 return style
-            case 'b':
+            case 'black':
                 style.background = 'black'
                 return style
 
@@ -35,6 +34,6 @@ export const Disc = (props) => {
     }
 
     return (
-        <div className="bone" onClick={() => handleClick(posX, posY)} style={styleFicha(color)}></div>
+        <div className="bone" onClick={() => handleClick(pos.x, pos.y)} style={styleFicha(color)}></div>
     )
 }

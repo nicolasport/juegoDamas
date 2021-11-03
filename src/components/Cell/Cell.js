@@ -6,12 +6,12 @@ import '~/scss/Cell.scss'
 export const Cell = (props) => {
 
 
-    const {posX, posY, cellSize, children, avaliablePlaces, movDisc, memo, selectedDisc, playerColor} = props
+    const {pos, cellSize, children, avaliablePlaces, movDisc, memo, selectedDisc, playerColor, selected} = props
 
     useEffect(() => {
     },[])
 
-    function checkpair(row, col, avaliablePlaces) {
+    function checkpair(row, col, avaliablePlaces, selected) {
         let cell = {
             width: `${cellSize}px`,
             height: `${cellSize}px`,
@@ -29,41 +29,41 @@ export const Cell = (props) => {
             if (col %  2 === 0){ cell.background = '#a6a6a6' }
             else{ cell.background = 'white' }
         }
+        if(selected === true){
+            cell.boxShadow = 'rgb(0 78 255) 0px 0px 10px inset'
+        }
         if(avaliablePlaces === 'g'){
             cell.boxShadow = 'inset 0px 0px 10px #56ff00'
             cell.cursor = 'pointer'
-
-            //console.log(cell)
         }
 
         return cell
     }
-
     const handleClickCell = useCallback(() => {
-        movDisc(posX, posY, memo, selectedDisc, playerColor)
-    },[memo, selectedDisc, playerColor])
+        movDisc(pos.x, pos.y, memo, selectedDisc, playerColor, selectedDisc.rol)
+    },[pos.x, pos.y, memo, selectedDisc, playerColor])
+
 
     if(avaliablePlaces){
-        const color = checkpair(posX, posY, avaliablePlaces[posX][posY])
+        const color = checkpair(pos.x, pos.y, avaliablePlaces[pos.x][pos.y], selected)
 
         return (
-            avaliablePlaces[posX][posY] === 'g'
-                ?   <li onClick={()=> handleClickCell()} className={'boneCell'} style={color} key={`${posX}-${posY}`}>{children}</li>
-                :   <li className={'boneCell'} style={color} key={`${posX}-${posY}`}>{children}</li>
+            avaliablePlaces[pos.x][pos.y] === 'g'
+                ?   <li onClick={()=> handleClickCell()} className={'boneCell'} style={color} key={`${pos.x}-${pos.y}`}>{children}</li>
+                :   <li className={'boneCell'} style={color} key={`${pos.x}-${pos.y}`}>{children}</li>
 
         )
     }else{
-        const color = checkpair(posX, posY)
+        const color = checkpair(pos.x, pos.y)
 
         return (
-            <li className={'boneCell'} style={color} key={`${posX}-${posY}`}>{children}</li>
+            <li className={'boneCell'} style={color} key={`${pos.x}-${pos.y}`}>{children}</li>
         )
     }
 }
 
 Cell.propTypes = {
-    posX: PropTypes.number,
-    posY: PropTypes.number,
+    pos: PropTypes.object,
     cellSize: PropTypes.number,
     avaliablePlaces: PropTypes.array,
     movDisc: PropTypes.func.isRequired,
