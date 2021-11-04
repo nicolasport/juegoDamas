@@ -20,11 +20,14 @@ const initialState = {
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [bDisc, 0, bDisc, 0, bDisc, 0, bDisc, 0, bDisc, 0],
-    [0, bDisc, 0, bDisc, 0, bDisc, 0, bDisc, 0, bDisc],
+    [0, bDisc, 0, bDisc, 0, bDisc, 0, 0, 0, bDisc],
     [bDisc, 0, bDisc, 0, bDisc, 0, bDisc, 0, bDisc, 0],
   ],
+  keepMov: false,
   sizeBoardX: 8, // Cantidad de columnas a lo alto del tablero
   sizeBoardY: 10, // Cantidad de columnas a lo ancho del tablero
+  sizeMatrizX: 7,
+  sizeMatrizY: 9,
   cellSize: 70, // tamaño en px de cada celda
   timePlayer: 'white', // Blanco o Negro, es el jugador en turno
   selectedDisc: { x: null, y: null, rol: null }, // Disco que haas sido seleccionado

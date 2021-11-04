@@ -17,6 +17,7 @@ export const Board = (props) => {
         selectedDisc,
         checkPlayerTurn,
         timePlayer,
+        keepMov
     } = useContext(BoardContext);
 
     useEffect(()=> {

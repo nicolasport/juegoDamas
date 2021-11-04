@@ -2,6 +2,7 @@ import React from 'react';
 import useBoard, { DiscFactory } from '~/Hook/UseBoard';
 import BoardContext from '~/context/Board/BoardContext';
 import { PEON, KING } from '~/constants/rolesDisc';
+import { SET_SELECTED_DISC, SET_AVALIABLE_PLACES, SET_PLAYER_TURN, SET_BOARD_MOV } from '~/context/Board/actionsTypes';
 
 
 const BoardState = (props) => {
@@ -32,145 +33,205 @@ const BoardState = (props) => {
       playerToPlay = 'white';
     }
     dispatch({
-      type: 'SET_PLAYER_TURN',
+      type: SET_PLAYER_TURN,
       payload: playerToPlay,
     });
     // avaliablePlaces
     dispatch({
-      type: 'SET_AVALIABLE_PLACES',
+      type: SET_AVALIABLE_PLACES,
       payload: initialState.avaliablePlaces,
     });
     // selectedDisc
     dispatch({
-      type: 'SET_SELECTED_DISC',
+      type: SET_SELECTED_DISC,
       payload: { x: null, y: null, rol: null },
     });
   };
-  /*
-  const EatOpponentDisc = (x, y) => {
-    const virtualMemo = state.memo;
-    console.log(`EAT OPPONNENT: ${virtualMemo[x][y]}`);
-    virtualMemo[x][y] = 0;
-    dispatch({
-      type: 'SET_BOARD_MOV',
-      payload: virtualMemo,
-    });
-  };
-   */
 
-  const peonEat = (memo) => {
-    const virtualMemo = memo;
+  const checkKeepMov = (x, y) => {
+    // const VirtualAvPlaces = initialState.avaliablePlaces;
+    const { timePlayer, memo, sizeMatrizY, sizeMatrizX } = state;
+
+    console.log('x=> ', x);
+    console.log('y=>', y);
     // BLANCO
-    // ! VER QUE COME LA FICHA DE LA DERECHA Y DE LA IZQUIERDA TODO
+    const aprov = Math.abs(Math.abs(x - sizeMatrizX)) >= 0;
+    if (timePlayer === 'white' && aprov) {
+      // IZQ
+      if ((x + 2) <= (sizeMatrizX) && (y - 2) >= 0) {
+        if (memo[x + 1][y - 1].color === 'black' && memo[x + 2][y - 2] === 0) {
+          if ((x + 2) <= (sizeMatrizX) && (y - 2) >= 0) {
+            checkKeepMov(x + 2, y - 2);
+          }
+          console.log({ x: x + 2, y: y - 2 });
+          return true;
+        }
+      }
+
+      // DERECHA
+      if ((x + 2) <= (sizeMatrizX) && (y + 2) <= sizeMatrizY) { // si no se pasa del tablero
+        if (memo[x + 2][y + 2] !== undefined) {
+          if (memo[x + 1][y + 1].color === 'black' && memo[x + 2][y + 2] === 0) {
+            if ((x + 2) <= (sizeMatrizX) && (y + 2) <= sizeMatrizY) {
+              checkKeepMov(x + 2, y + 2);
+            }
+            console.log({ x: x + 2, y: y + 2 });
+            return true;
+          }
+        }
+      }
+    }
+
+    if (timePlayer === 'black' && y !== null && aprov) {
+      // IZQ
+      if ((x - 2) >= 0 && (y - 2) >= 0) {
+        if (memo[x - 1][y - 1].color === 'white' && memo[x - 2][y - 2] === 0) {
+          if ((x - 2) >= 0 && (y - 2) >= 0) {
+            checkKeepMov(x - 2, y - 2);
+          }
+          console.log({ x: x - 2, y: y - 2 });
+          return true;
+        }
+      }
+
+      // DERECHA
+      if ((x - 2) >= 0 && (y + 2) <= sizeMatrizY) {
+        if (memo[x - 1][y + 1].color === 'white' && memo[x - 2][y + 2] === 0) {
+          if ((x - 2) >= (0) && (y + 2) <= sizeMatrizY) {
+            checkKeepMov(x - 2, y + 2);
+          }
+          console.log({ x: x - 2, y: y + 2 });
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+
+  const peonEat = (memo, movX, movY, selectedDisc) => {
+    const virtualMemo = memo;
+    // Determinar si se mueve hacia izq o derecha
+    let sideToMov;
+    if (movY < selectedDisc.y) {
+      // Mueve Izq
+      sideToMov = 'left';
+    } else {
+      // Mueve Derecha
+      sideToMov = 'right';
+    }
+
+    // BLANCO
     if (state.timePlayer === 'white') {
       // IZQ
-      if (state.selectedDisc.y - 1 >= 0 && state.selectedDisc.x + 1 <= state.sizeBoardY && state.selectedDisc.y !== null) { // si no se pasa del tablero
-        // SI HAY LUGAR LIBRE
-        if (state.memo[state.selectedDisc.x + 1][state.selectedDisc.y - 1].color === 'black' && state.memo[state.selectedDisc.x + 2][state.selectedDisc.y - 2] === 0) {
+      if (sideToMov === 'left') { // si no se pasa del tablero
+        if (state.memo[state.selectedDisc.x + 1][state.selectedDisc.y - 1].color === 'black') {
           // TODO chequear si come ficha
           virtualMemo[state.selectedDisc.x + 1][state.selectedDisc.y - 1] = 0;
         }
       }
       // DERECHA
-      if (state.selectedDisc.y + 1 <= state.sizeBoardY && state.selectedDisc.x + 1 <= state.sizeBoardY && state.selectedDisc.y !== null) { // si no se pasa del tablero
-        if (state.memo[state.selectedDisc.x + 1][state.selectedDisc.y + 1].color === 'black' && state.memo[state.selectedDisc.x + 2][state.selectedDisc.y + 2] === 0) {
+      if (sideToMov === 'right') {
+        if (state.memo[state.selectedDisc.x + 1][state.selectedDisc.y + 1].color === 'black') {
           virtualMemo[state.selectedDisc.x + 1][state.selectedDisc.y + 1] = 0;
         }
       }
     } /* NEGRO */ else {
       // IZQ
-      if (state.selectedDisc.y - 1 >= 0 && state.selectedDisc.x - 1 >= 0 && state.selectedDisc.y !== null) {
-        // SI HAY LUGAR LIBRE
-        if (state.memo[state.selectedDisc.x - 1][state.selectedDisc.y - 1].color === 'white' && state.memo[state.selectedDisc.x - 2][state.selectedDisc.y - 2] === 0) {
+      if (sideToMov === 'left') {
+        if (state.memo[state.selectedDisc.x - 1][state.selectedDisc.y - 1].color === 'white') {
           virtualMemo[state.selectedDisc.x - 1][state.selectedDisc.y - 1] = 0;
         }
       }
       // DERECHA
-      if (state.selectedDisc.y + 1 <= state.sizeBoardY && state.selectedDisc.x - 1 >= 0 && state.selectedDisc.y !== null) {
-        if (state.memo[state.selectedDisc.x - 1][state.selectedDisc.y + 1].color === 'white' && state.memo[state.selectedDisc.x - 2][state.selectedDisc.y + 2] === 0) {
+      if (sideToMov === 'right') {
+        if (state.memo[state.selectedDisc.x - 1][state.selectedDisc.y + 1].color === 'white') {
           virtualMemo[state.selectedDisc.x - 1][state.selectedDisc.y + 1] = 0;
         }
       }
     }
     return virtualMemo;
   };
-
   const movDisc = (movX, movY, memo, selectedDisc, playerColor, rol) => {
     const Disc = DiscFactory(playerColor, rol);
     // ! Controller for KING
-    const virtualMemo = Math.abs(movX - selectedDisc.x) >= 2 ? peonEat(memo) : memo; // Si el peon mueve mas de un casillero es porque come a otra ficha
+    const virtualMemo = Math.abs(movX - selectedDisc.x) >= 2 ? peonEat(memo, movX, movY, selectedDisc) : memo; // Si el peon mueve mas de un casillero es porque come a otra ficha
     virtualMemo[selectedDisc.x][selectedDisc.y] = 0;
     virtualMemo[movX][movY] = Disc;
+    console.log(checkKeepMov(movX, movY));
     endTurn();
     // ADHIERER EL MOVIMIENTO A LA MATRIZ
     dispatch({
-      type: 'SET_BOARD_MOV',
+      type: SET_BOARD_MOV,
       payload: virtualMemo,
     });
   };
 
   // MOVIMINETO DE PEON
   const peonAvPlaces = () => {
-    const VirtualAvPlaces = state.avaliablePlaces;
+    const { avaliablePlaces, sizeMatrizY, sizeMatrizX, selectedDisc, memo, timePlayer } = state;
+    const VirtualAvPlaces = avaliablePlaces;
     // BLANCO
-    const aprov = Math.abs(state.selectedDisc.x - state.sizeBoardX);
-    if (state.timePlayer === 'white' && aprov > 1) {
+    if (timePlayer === 'white') {
       // IZQ
-      if (state.selectedDisc.y - 1 >= 0 && state.selectedDisc.x + 1 <= state.sizeBoardY && state.selectedDisc.y !== null) { // si no se pasa del tablero
+      if ((selectedDisc.y - 1) >= 0 && (selectedDisc.x + 1) <= sizeMatrizX) { // si no se pasa del tablero
         // SI HAY LUGAR LIBRE
-        if (state.memo[state.selectedDisc.x + 1][state.selectedDisc.y - 1] === 0) {
+        if (memo[selectedDisc.x + 1][selectedDisc.y - 1] === 0) {
           const left = {
-            x: state.selectedDisc.x + 1,
-            y: state.selectedDisc.y - 1,
+            x: selectedDisc.x + 1,
+            y: selectedDisc.y - 1,
           };
           VirtualAvPlaces[left.x][left.y] = 'g';
-        } else if (state.memo[state.selectedDisc.x + 2][state.selectedDisc.y - 2] !== undefined) {
-          if (state.memo[state.selectedDisc.x + 1][state.selectedDisc.y - 1].color === 'black' && state.memo[state.selectedDisc.x + 2][state.selectedDisc.y - 2] === 0) {
+        } else if (selectedDisc.x + 2 <= sizeMatrizX && selectedDisc.y - 2 > 0) {
+          if (memo[selectedDisc.x + 1][selectedDisc.y - 1].color === 'black' && memo[selectedDisc.x + 2][selectedDisc.y - 2] === 0) {
             // TODO chequear si come ficha
-            VirtualAvPlaces[state.selectedDisc.x + 2][state.selectedDisc.y - 2] = 'g';
+            VirtualAvPlaces[selectedDisc.x + 2][selectedDisc.y - 2] = 'g';
           }
         }
       }
       // DERECHA
-      if (state.selectedDisc.y + 1 <= state.sizeBoardY && state.selectedDisc.x + 1 <= state.sizeBoardY && state.selectedDisc.y !== null) { // si no se pasa del tablero
-        if (state.memo[state.selectedDisc.x + 1][state.selectedDisc.y + 1] === 0) {
+      if (selectedDisc.y + 1 <= sizeMatrizY && selectedDisc.x + 1 <= sizeMatrizX && selectedDisc.y !== null) { // si no se pasa del tablero
+        if (memo[selectedDisc.x + 1][selectedDisc.y + 1] === 0) {
           const right = {
-            x: state.selectedDisc.x + 1,
-            y: state.selectedDisc.y + 1,
+            x: selectedDisc.x + 1,
+            y: selectedDisc.y + 1,
           };
           VirtualAvPlaces[right.x][right.y] = 'g';
-        } else if (state.memo[state.selectedDisc.x + 2][state.selectedDisc.y + 2] !== undefined) {
-          if (state.memo[state.selectedDisc.x + 1][state.selectedDisc.y + 1].color === 'black' && state.memo[state.selectedDisc.x + 2][state.selectedDisc.y + 2] === 0) {
-            VirtualAvPlaces[state.selectedDisc.x + 2][state.selectedDisc.y + 2] = 'g';
+        } else if (selectedDisc.x + 2 <= sizeMatrizX && selectedDisc.y + 2 <= sizeMatrizY) {
+          if (memo[selectedDisc.x + 1][selectedDisc.y + 1].color === 'black' && memo[selectedDisc.x + 2][selectedDisc.y + 2] === 0) {
+            VirtualAvPlaces[selectedDisc.x + 2][selectedDisc.y + 2] = 'g';
           }
         }
       }
-    } /* NEGRO */ else if (state.timePlayer === 'black' && state.selectedDisc.y !== null && aprov > 0) {
+    } /* NEGRO */ else if (timePlayer === 'black') {
       // IZQ
-      if (state.selectedDisc.y - 1 >= 0 && state.selectedDisc.x - 1 >= 0) {
+      if (selectedDisc.y - 1 >= 0 && selectedDisc.x - 1 >= 0) {
         // SI HAY LUGAR LIBRE
-        if (state.memo[state.selectedDisc.x - 1][state.selectedDisc.y - 1] === 0) {
-          const left = { x: state.selectedDisc.x - 1, y: state.selectedDisc.y - 1 };
+        if (memo[selectedDisc.x - 1][selectedDisc.y - 1] === 0) {
+          const left = { x: selectedDisc.x - 1, y: selectedDisc.y - 1 };
           VirtualAvPlaces[left.x][left.y] = 'g';
-        } else if (state.memo[state.selectedDisc.x - 1][state.selectedDisc.y - 1].color === 'white' && state.memo[state.selectedDisc.x - 2][state.selectedDisc.y - 2] === 0) {
-          VirtualAvPlaces[state.selectedDisc.x - 2][state.selectedDisc.y - 2] = 'g';
+        } else if (selectedDisc.x - 2 >= 0 && selectedDisc.y - 2 >= 0) {
+          if (memo[selectedDisc.x - 1][selectedDisc.y - 1].color === 'white' && memo[selectedDisc.x - 2][selectedDisc.y - 2] === 0) {
+            VirtualAvPlaces[selectedDisc.x - 2][selectedDisc.y - 2] = 'g';
+          }
         }
       }
       // DERECHA
-      if (state.selectedDisc.y + 1 <= state.sizeBoardY && state.selectedDisc.x - 1 >= 0 && state.selectedDisc.y !== null) {
-        if (state.memo[state.selectedDisc.x - 1][state.selectedDisc.y + 1] === 0) {
+      if (selectedDisc.y + 1 <= sizeMatrizY && selectedDisc.x - 1 >= 0 && selectedDisc.y !== null) {
+        if (memo[selectedDisc.x - 1][selectedDisc.y + 1] === 0) {
           const right = {
-            x: state.selectedDisc.x - 1,
-            y: state.selectedDisc.y + 1,
+            x: selectedDisc.x - 1,
+            y: selectedDisc.y + 1,
           };
           VirtualAvPlaces[right.x][right.y] = 'g';
-        } else if (state.memo[state.selectedDisc.x - 1][state.selectedDisc.y + 1].color === 'white' && state.memo[state.selectedDisc.x - 2][state.selectedDisc.y + 2] === 0) {
-          VirtualAvPlaces[state.selectedDisc.x - 2][state.selectedDisc.y + 2] = 'g';
+        } else if (selectedDisc.x - 2 >= 0 && selectedDisc.y + 2 <= sizeMatrizY) {
+          if (memo[selectedDisc.x - 1][selectedDisc.y + 1].color === 'white' && memo[selectedDisc.x - 2][selectedDisc.y + 2] === 0) {
+            VirtualAvPlaces[selectedDisc.x - 2][selectedDisc.y + 2] = 'g';
+          }
         }
       }
     }
     dispatch({
-      type: 'SET_AVALIABLE_PLACES',
+      type: SET_AVALIABLE_PLACES,
       payload: VirtualAvPlaces,
     });
   };
@@ -179,7 +240,7 @@ const BoardState = (props) => {
   const checkMovement = (rol) => {
     switch (rol) {
       case PEON:
-        console.log(`state.selectedDisc.x:${state.selectedDisc.x} <= state.sizeBoardX:${state.sizeBoardX}`);
+        // console.log(`state.selectedDisc.x:${state.selectedDisc.x} <= state.sizeBoardX:${state.sizeBoardX}`);
         peonAvPlaces();
         break;
       case KING:
@@ -193,24 +254,18 @@ const BoardState = (props) => {
   const checkPlayerTurn = (color, x, y, rol) => {
     if (color === state.timePlayer) {
       dispatch({
-        type: 'SET_AVALIABLE_PLACES',
+        type: SET_AVALIABLE_PLACES,
         payload: initialState.avaliablePlaces,
       });
       // Sube al estado el disco seleccionado
       dispatch({
-        type: 'SET_SELECTED_DISC',
+        type: SET_SELECTED_DISC,
         payload: { x, y, rol },
       });
       return;
     }
     console.log(`TURNO DEL JUGADOR ${state.timePlayer === 'white' ? 'BLANCO' : 'NEGRO'}`);
   };
-
-  /*
-    const setMovement = () => {};
-    const checkWin = () => {};
-    const setPoint = () => {};
-    */
 
 
   return (
