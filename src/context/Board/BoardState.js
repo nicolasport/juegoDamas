@@ -55,8 +55,7 @@ const BoardState = (props) => {
     console.log('x=> ', x);
     console.log('y=>', y);
     // BLANCO
-    const aprov = Math.abs(Math.abs(x - sizeMatrizX)) >= 0;
-    if (timePlayer === 'white' && aprov) {
+    if (timePlayer === 'white') {
       // IZQ
       if ((x + 2) <= (sizeMatrizX) && (y - 2) >= 0) {
         if (memo[x + 1][y - 1].color === 'black' && memo[x + 2][y - 2] === 0) {
@@ -82,7 +81,7 @@ const BoardState = (props) => {
       }
     }
 
-    if (timePlayer === 'black' && y !== null && aprov) {
+    if (timePlayer === 'black') {
       // IZQ
       if ((x - 2) >= 0 && (y - 2) >= 0) {
         if (memo[x - 1][y - 1].color === 'white' && memo[x - 2][y - 2] === 0) {
@@ -107,7 +106,17 @@ const BoardState = (props) => {
     }
     return false;
   };
-
+  const checkArriveEndCellOfBoard = (x, y, color) => {
+    if (color === 'white') {
+      console.log(x - state.sizeMatrizX);
+      console.log(y - state.sizeMatrizY);
+      return ((x - state.sizeMatrizX) === 0);
+    }
+    if (color === 'black') {
+      return x === 0;
+    }
+    return false;
+  };
   const peonEat = (memo, movX, movY, selectedDisc) => {
     const virtualMemo = memo;
     // Determinar si se mueve hacia izq o derecha
@@ -152,10 +161,13 @@ const BoardState = (props) => {
     return virtualMemo;
   };
   const movDisc = (movX, movY, memo, selectedDisc, playerColor, rol) => {
-    const Disc = DiscFactory(playerColor, rol);
-    // ! Controller for KING
-    const virtualMemo = Math.abs(movX - selectedDisc.x) >= 2 ? peonEat(memo, movX, movY, selectedDisc) : memo; // Si el peon mueve mas de un casillero es porque come a otra ficha
+    let Disc = DiscFactory(playerColor, rol);
+
+    const virtualMemo = Math.abs(movX - selectedDisc.x) >= 2 && rol === 'peon' ? peonEat(memo, movX, movY, selectedDisc) : memo; // Si el peon mueve mas de un casillero es porque come a otra ficha
     virtualMemo[selectedDisc.x][selectedDisc.y] = 0;
+    if (rol === 'peon' && checkArriveEndCellOfBoard(movX, movY, playerColor)) {
+      Disc = DiscFactory(playerColor, 'king');
+    }
     virtualMemo[movX][movY] = Disc;
     console.log(checkKeepMov(movX, movY));
     endTurn();
@@ -170,6 +182,7 @@ const BoardState = (props) => {
   const peonAvPlaces = () => {
     const { avaliablePlaces, sizeMatrizY, sizeMatrizX, selectedDisc, memo, timePlayer } = state;
     const VirtualAvPlaces = avaliablePlaces;
+
     // BLANCO
     if (timePlayer === 'white') {
       // IZQ
@@ -189,7 +202,7 @@ const BoardState = (props) => {
         }
       }
       // DERECHA
-      if (selectedDisc.y + 1 <= sizeMatrizY && selectedDisc.x + 1 <= sizeMatrizX && selectedDisc.y !== null) { // si no se pasa del tablero
+      if (selectedDisc.y + 1 <= sizeMatrizY && selectedDisc.x + 1 <= sizeMatrizX) { // si no se pasa del tablero
         if (memo[selectedDisc.x + 1][selectedDisc.y + 1] === 0) {
           const right = {
             x: selectedDisc.x + 1,
@@ -235,6 +248,87 @@ const BoardState = (props) => {
       payload: VirtualAvPlaces,
     });
   };
+  const kingAvPlaces = () => {
+    const { avaliablePlaces, sizeMatrizY, sizeMatrizX, selectedDisc, memo } = state;
+    const VirtualAvPlaces = avaliablePlaces;
+
+    // BLANCO
+
+    const cantMov = sizeMatrizX;
+    // eslint-disable-next-line no-plusplus
+    for (let i = 1; i <= cantMov; i++) {
+      // abajo IZQ
+      if ((selectedDisc.y - i) >= 0 && (selectedDisc.x + i) <= sizeMatrizX) { // si no se pasa del tablero
+        if (memo[selectedDisc.x + i][selectedDisc.y - i] === 0) {
+          const left = {
+            x: selectedDisc.x + i,
+            y: selectedDisc.y - i,
+          };
+          VirtualAvPlaces[left.x][left.y] = 'g';
+        } else if (selectedDisc.x + (i + 1) <= sizeMatrizX && selectedDisc.y - (i + 1) > 0) {
+          if (memo[selectedDisc.x + i][selectedDisc.y - i].color === 'black' && memo[selectedDisc.x + (i + 1)][selectedDisc.y - (i + 1)] === 0) {
+            VirtualAvPlaces[selectedDisc.x + (i + 1)][selectedDisc.y - (i + 1)] = 'g';
+          }
+        }
+      }
+      // arriba IZQ
+      if ((selectedDisc.y - i) >= 0 && (selectedDisc.x - i) >= 0) { // si no se pasa del tablero
+        // SI HAY LUGAR LIBRE
+        if (memo[selectedDisc.x - i][selectedDisc.y - i] === 0) {
+          const left = {
+            x: selectedDisc.x - i,
+            y: selectedDisc.y - i,
+          };
+          VirtualAvPlaces[left.x][left.y] = 'g';
+        } else if (selectedDisc.x - (i + 1) >= 0 && selectedDisc.y - (i + 1) >= 0) {
+          if (memo[selectedDisc.x - i][selectedDisc.y - i].color === 'black' && memo[selectedDisc.x - (i + 1)][selectedDisc.y - (i + 1)] === 0) {
+            VirtualAvPlaces[selectedDisc.x - (i + 1)][selectedDisc.y - (i + 1)] = 'g';
+          }
+        }
+      }
+
+      // abajo DERECHA
+      if (selectedDisc.y + i <= sizeMatrizY && selectedDisc.x + i <= sizeMatrizX) {
+        if (memo[selectedDisc.x + i][selectedDisc.y + i] === 0) {
+          const right = {
+            x: selectedDisc.x + i,
+            y: selectedDisc.y + i,
+          };
+          VirtualAvPlaces[right.x][right.y] = 'g';
+        } else if (selectedDisc.x + (i + 1) <= sizeMatrizX && selectedDisc.y + (i + 1) <= sizeMatrizY) {
+          if (memo[selectedDisc.x + i][selectedDisc.y + i].color === 'black' && memo[selectedDisc.x + (i + 1)][selectedDisc.y + (i + 1)] === 0) {
+            VirtualAvPlaces[selectedDisc.x + (i + 1)][selectedDisc.y + (i + 1)] = 'g';
+          }
+          // !Ver recorrido de rey cuando hay mas de una ficha y de distintos colores
+          if (memo[selectedDisc.x + i][selectedDisc.y + i].color === 'white') {
+            //
+          }
+        }
+      }
+      // arriba DERECHA
+      if ((selectedDisc.y + i) <= sizeMatrizY && (selectedDisc.x - i) >= 0) {
+        if (memo[selectedDisc.x - i][selectedDisc.y + i] === 0) {
+          const right = {
+            x: selectedDisc.x - i,
+            y: selectedDisc.y + i,
+          };
+          VirtualAvPlaces[right.x][right.y] = 'g';
+        } else if (selectedDisc.x - (i + 1) >= 0 && selectedDisc.y + (i + 1) <= sizeMatrizY) {
+          if (memo[selectedDisc.x - i][selectedDisc.y + i].color === 'black' && memo[selectedDisc.x - (i + 1)][selectedDisc.y + (i + 1)] === 0) {
+            VirtualAvPlaces[selectedDisc.x - (i + 1)][selectedDisc.y + (i + 1)] = 'g';
+          }
+          if (memo[selectedDisc.x - i][selectedDisc.y + i].color === 'white') {
+            //
+          }
+        }
+      }
+    }
+
+    dispatch({
+      type: SET_AVALIABLE_PLACES,
+      payload: VirtualAvPlaces,
+    });
+  };
 
   // PINTA LUGARES A MOVER
   const checkMovement = (rol) => {
@@ -244,6 +338,7 @@ const BoardState = (props) => {
         peonAvPlaces();
         break;
       case KING:
+        kingAvPlaces();
         break;
       default:
         throw new Error('ERROR DE ROL DE FICHA');

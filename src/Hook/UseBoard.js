@@ -16,12 +16,12 @@ const initialState = {
   memo: [
     [0, wDisc, 0, wDisc, 0, wDisc, 0, wDisc, 0, wDisc],
     [wDisc, 0, wDisc, 0, wDisc, 0, wDisc, 0, wDisc, 0],
-    [0, wDisc, 0, wDisc, 0, wDisc, 0, wDisc, 0, wDisc],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [bDisc, 0, bDisc, 0, bDisc, 0, bDisc, 0, bDisc, 0],
-    [0, bDisc, 0, bDisc, 0, bDisc, 0, 0, 0, bDisc],
-    [bDisc, 0, bDisc, 0, bDisc, 0, bDisc, 0, bDisc, 0],
+    [0, 0, 0, bDisc, 0, bDisc, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, wDisc, 0, 0, 0, 0, 0, bDisc],
+    [0, 0, 0, 0, bDisc, 0, bDisc, 0, bDisc, 0],
   ],
   keepMov: false,
   sizeBoardX: 8, // Cantidad de columnas a lo alto del tablero
