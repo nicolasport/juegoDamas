@@ -6,9 +6,6 @@ export const Disc = (props) => {
 
    const {color, cellSize, pos, rol, checkPlayerTurn} = props
 
-    useEffect(() =>{
-    },[])
-
     const handleClick = (x, y) => {
         checkPlayerTurn(color, x, y, rol)
     }

@@ -10,18 +10,18 @@ export const DiscFactory = (color, rol) => {
 };
 const wDisc = DiscFactory('white', 'peon');
 const bDisc = DiscFactory('black', 'peon');
-
+const kDisc = DiscFactory('white', 'king');
 const initialState = {
   // Memooria de las piezas del juego
   memo: [
     [0, wDisc, 0, wDisc, 0, wDisc, 0, wDisc, 0, wDisc],
     [wDisc, 0, wDisc, 0, wDisc, 0, wDisc, 0, wDisc, 0],
+    [0, wDisc, 0, kDisc, 0, wDisc, 0, wDisc, 0, wDisc],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, bDisc, 0, bDisc, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, wDisc, 0, 0, 0, 0, 0, bDisc],
-    [0, 0, 0, 0, bDisc, 0, bDisc, 0, bDisc, 0],
+    [bDisc, 0, bDisc, 0, bDisc, 0, bDisc, 0, bDisc, 0],
+    [0, bDisc, 0, bDisc, 0, bDisc, 0, bDisc, 0, bDisc],
+    [bDisc, 0, bDisc, 0, bDisc, 0, bDisc, 0, bDisc, 0],
   ],
   keepMov: false,
   sizeBoardX: 8, // Cantidad de columnas a lo alto del tablero
@@ -29,9 +29,11 @@ const initialState = {
   sizeMatrizX: 7,
   sizeMatrizY: 9,
   cellSize: 70, // tamaño en px de cada celda
+  pointsWhitePlayer: 0,
+  pointsBlackPlayer: 0,
   timePlayer: 'white', // Blanco o Negro, es el jugador en turno
   selectedDisc: { x: null, y: null, rol: null }, // Disco que haas sido seleccionado
-  avaliablePlaces: [ // mastriz en la quie se almacenan los lugares disponibles en base al selectedDisc, se mara con 'g' el lugar habilitado
+  availablePlaces: [ // mastriz en la quie se almacenan los lugares disponibles en base al selectedDisc, se mara con 'g' el lugar habilitado
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],

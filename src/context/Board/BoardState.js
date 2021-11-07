@@ -10,7 +10,7 @@ const BoardState = (props) => {
   const { children } = props;
 
   const initialState = {
-    avaliablePlaces: [
+    availablePlaces: [
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -39,7 +39,7 @@ const BoardState = (props) => {
     // avaliablePlaces
     dispatch({
       type: SET_AVALIABLE_PLACES,
-      payload: initialState.avaliablePlaces,
+      payload: initialState.availablePlaces,
     });
     // selectedDisc
     dispatch({
@@ -47,165 +47,202 @@ const BoardState = (props) => {
       payload: { x: null, y: null, rol: null },
     });
   };
-  const checkFreeCell = (x, y, xDir, yDir, memo) => {
-    /*eslint-disable */
 
-      const aprovDown = (x) <= state.sizeMatrizX;
-      const aprovTop = (x) >= 0;
-      const aprovLeft = (y) >= 0;
-      const aprovRight = (y) <= state.sizeMatrizY;
-      const down = (x);
-      const top = (x);
-      const left = (y);
-      const right = (y);
-
+  const checkDiscColorInCell = (x, y, xDir, yDir, memo, color) => {
+    const aprovDown = (x) <= state.sizeMatrizX;
+    const aprovTop = (x) >= 0;
+    const aprovLeft = (y) >= 0;
+    const aprovRight = (y) <= state.sizeMatrizY;
+    const down = (x);
+    const top = (x);
+    const left = (y);
+    const right = (y);
 
     if (xDir === 'down' && aprovDown) {
       if (yDir === 'left' && aprovLeft) {
-        if (memo[down][left] === 0) {
-          return true;
-        }
+        return memo[down][left].color === color;
       }
       if (yDir === 'right' && aprovRight) {
-        if (memo[down][right] === 0) {
-          return true;
-        }
+        return memo[down][right].color === color;
       }
     } else if (xDir === 'top' && aprovTop) {
       if (yDir === 'left' && aprovLeft) {
-        if (memo[top][left] === 0) {
-          return true;
-        } return false;
+        return memo[top][left].color === color;
       } if (yDir === 'right' && aprovRight) {
-        if (memo[top][right] === 0) {
-          return true;
-        }
-        return false;
+        return memo[top][right].color === color;
       }
     }
     return false;
   };
-  const checkKeepMov = (x, y) => {
-    // const VirtualAvPlaces = initialState.avaliablePlaces;
-    const { timePlayer, memo, sizeMatrizY, sizeMatrizX } = state;
 
-    // console.log('x=> ', x);
-    // console.log('y=>', y);
-    // BLANCO
-    if (timePlayer === 'white') {
-      // IZQ
-      if ((x + 2) <= (sizeMatrizX) && (y - 2) >= 0) {
-        if (memo[x + 1][y - 1].color === 'black' && memo[x + 2][y - 2] === 0) {
-          if ((x + 2) <= (sizeMatrizX) && (y - 2) >= 0) {
-            checkKeepMov(x + 2, y - 2);
-          }
-          console.log({ x: x + 2, y: y - 2 });
-          return true;
-        }
+  const checkFreeCell = (x, y, xDir, yDir) => {
+    const { memo } = state;
+    const aprovDown = (x) <= state.sizeMatrizX;
+    const aprovTop = (x) >= 0;
+    const aprovLeft = (y) >= 0;
+    const aprovRight = (y) <= state.sizeMatrizY;
+    const down = (x);
+    const top = (x);
+    const left = (y);
+    const right = (y);
+
+    if (xDir === 'down' && aprovDown) {
+      if (yDir === 'left' && aprovLeft) {
+        return memo[down][left] === 0;
       }
-
-      // DERECHA
-      if ((x + 2) <= (sizeMatrizX) && (y + 2) <= sizeMatrizY) { // si no se pasa del tablero
-        if (memo[x + 2][y + 2] !== undefined) {
-          if (memo[x + 1][y + 1].color === 'black' && memo[x + 2][y + 2] === 0) {
-            if ((x + 2) <= (sizeMatrizX) && (y + 2) <= sizeMatrizY) {
-              checkKeepMov(x + 2, y + 2);
-            }
-            console.log({ x: x + 2, y: y + 2 });
-            return true;
-          }
-        }
+      if (yDir === 'right' && aprovRight) {
+        return memo[down][right] === 0;
       }
-    }
-
-    if (timePlayer === 'black') {
-      // IZQ
-      if ((x - 2) >= 0 && (y - 2) >= 0) {
-        if (memo[x - 1][y - 1].color === 'white' && memo[x - 2][y - 2] === 0) {
-          if ((x - 2) >= 0 && (y - 2) >= 0) {
-            checkKeepMov(x - 2, y - 2);
-          }
-          console.log({ x: x - 2, y: y - 2 });
-          return true;
-        }
-      }
-
-      // DERECHA
-      if ((x - 2) >= 0 && (y + 2) <= sizeMatrizY) {
-        if (memo[x - 1][y + 1].color === 'white' && memo[x - 2][y + 2] === 0) {
-          if ((x - 2) >= (0) && (y + 2) <= sizeMatrizY) {
-            checkKeepMov(x - 2, y + 2);
-          }
-          console.log({ x: x - 2, y: y + 2 });
-          return true;
-        }
+    } else if (xDir === 'top' && aprovTop) {
+      if (yDir === 'left' && aprovLeft) {
+        return memo[top][left] === 0;
+      } if (yDir === 'right' && aprovRight) {
+        return memo[top][right] === 0;
       }
     }
     return false;
+  };
+    // eslint-disable-next-line no-unused-vars
+  const checkKeepMov = (x, y) => {
+
   };
   const checkArriveEndCellOfBoard = (x, y, color) => {
-    if (color === 'white') {
-      return ((x - state.sizeMatrizX) === 0);
+    switch (color) {
+      case 'white':
+        return ((x - state.sizeMatrizX) === 0);
+      case 'black':
+        return x === 0;
+      default:
+        return false;
     }
-    if (color === 'black') {
-      return x === 0;
-    }
-    return false;
   };
-  const peonEat = (memo, movX, movY, selectedDisc) => {
+  const peonEat = (movX, movY) => {
+    const { timePlayer, memo, selectedDisc } = state;
     const virtualMemo = memo;
-    // Determinar si se mueve hacia izq o derecha
-    let sideToMov;
-    if (movY < selectedDisc.y) {
-      // Mueve Izq
-      sideToMov = 'left';
-    } else {
-      // Mueve Derecha
-      sideToMov = 'right';
-    }
+    const sideOfMovment = selectedDisc.y - movY > 0 ? 'left' : 'right';
 
-    // BLANCO
-    if (state.timePlayer === 'white') {
-      // IZQ
-      if (sideToMov === 'left') { // si no se pasa del tablero
-        if (state.memo[state.selectedDisc.x + 1][state.selectedDisc.y - 1].color === 'black') {
-          // TODO chequear si come ficha
-          virtualMemo[state.selectedDisc.x + 1][state.selectedDisc.y - 1] = 0;
-        }
+    const opponent = timePlayer === 'white' ? 'black' : 'white';
+    /*eslint-disable */
+      const playerDirecction = {
+          'white': 'down',
+          'black': 'top'
+      };
+      const sidesAdd = {
+          'left': -1,
+          'right': 1,
+          'down': 1,
+          'top':-1
+      };
+      /* eslint-enable */
+
+    [sideOfMovment].forEach((side) => {
+      const xAdd = sidesAdd[playerDirecction[timePlayer]];
+      const yAdd = sidesAdd[side];
+      // check if next cell its free
+      if (checkFreeCell(selectedDisc.x + xAdd, selectedDisc.y + yAdd, playerDirecction[timePlayer], side, memo)) {
+        // else check if is opponent in next cell
+      } else if (checkDiscColorInCell(selectedDisc.x + xAdd, selectedDisc.y + yAdd, playerDirecction[timePlayer], side, memo, opponent)) {
+        // check if the next cell to the opponent its free
+        virtualMemo[selectedDisc.x + xAdd][selectedDisc.y + yAdd] = 0;
+        dispatch({
+          type: `SET_${timePlayer.toUpperCase()}_POINTS`,
+        });
       }
-      // DERECHA
-      if (sideToMov === 'right') {
-        if (state.memo[state.selectedDisc.x + 1][state.selectedDisc.y + 1].color === 'black') {
-          virtualMemo[state.selectedDisc.x + 1][state.selectedDisc.y + 1] = 0;
-        }
-      }
-    } /* NEGRO */ else {
-      // IZQ
-      if (sideToMov === 'left') {
-        if (state.memo[state.selectedDisc.x - 1][state.selectedDisc.y - 1].color === 'white') {
-          virtualMemo[state.selectedDisc.x - 1][state.selectedDisc.y - 1] = 0;
-        }
-      }
-      // DERECHA
-      if (sideToMov === 'right') {
-        if (state.memo[state.selectedDisc.x - 1][state.selectedDisc.y + 1].color === 'white') {
-          virtualMemo[state.selectedDisc.x - 1][state.selectedDisc.y + 1] = 0;
-        }
-      }
-    }
+    });
+
     return virtualMemo;
   };
-  const movDisc = (movX, movY, memo, selectedDisc, playerColor, rol) => {
-    let Disc = DiscFactory(playerColor, rol);
+    // eslint-disable-next-line no-unused-vars
+  const kingEat = (movX, movY) => {
+    const { sizeMatrizX, selectedDisc, memo, timePlayer } = state;
+    const virtualMemo = memo;
+    let arraySelVside;
+    let arraySelHside;
+    if (selectedDisc.x - movX > 0) { arraySelVside = 'top'; } else {
+      arraySelVside = 'down';
+    }
+    if (selectedDisc.y - movY > 0) { arraySelHside = 'left'; } else {
+      arraySelHside = 'right';
+    }
 
-    const virtualMemo = Math.abs(movX - selectedDisc.x) >= 2 && rol === 'peon' ? peonEat(memo, movX, movY, selectedDisc) : memo; // Si el peon mueve mas de un casillero es porque come a otra ficha
+
+    const opponentColor = timePlayer === 'white' ? 'black' : 'white';
+    /*eslint-disable */
+        const sidesAdd = {
+            'left': -1,
+            'right': 1,
+            'down': 1,
+            'top': -1,
+        };
+        /* eslint-enable */
+    const cantMov = sizeMatrizX;
+    /* eslint-disable */
+        let skipObj = {
+            'downleft': true,
+            'downright': true,
+            'topleft': true,
+            'topright': true,
+        };
+        let cantDiscInRoad = {
+            'downleft': 0,
+            'downright': 0,
+            'topleft': 0,
+            'topright': 0,
+        }
+
+        /* eslint-enable */
+
+    // eslint-disable-next-line no-plusplus
+    for (let i = 1; i <= cantMov; i++) {
+      // let cantDiscInRoad = 0;
+      [arraySelVside].forEach((vSide) => {
+        [arraySelHside].forEach((side) => {
+          const xAdd = sidesAdd[vSide] * i;
+          const yAdd = sidesAdd[side] * i;
+          /* eslint-disable */
+            let limitMovCond = {
+                'top' : selectedDisc.x + xAdd >= movX,
+                'down' : selectedDisc.x + xAdd <= movX
+            };/* eslint-enable */
+          const approve = skipObj[vSide + side];
+
+          if (checkDiscColorInCell(selectedDisc.x + xAdd, selectedDisc.y + yAdd, vSide, side, memo, opponentColor) && approve && limitMovCond[arraySelVside]) {
+            if (cantDiscInRoad[vSide + side] < 1) {
+              virtualMemo[selectedDisc.x + xAdd][selectedDisc.y + yAdd] = 0;
+              dispatch({
+                type: `SET_${timePlayer.toUpperCase()}_POINTS`,
+              });
+              skipObj[vSide + side] = false;
+              cantDiscInRoad[vSide + side] += 1;
+            }
+          } else if (checkDiscColorInCell(selectedDisc.x + xAdd, selectedDisc.y + yAdd, vSide, side, memo, timePlayer) && approve) {
+            skipObj[vSide + side] = false;
+            cantDiscInRoad[vSide + side] += 1;
+          }
+        });
+      });
+    }
+
+    return virtualMemo;
+  };
+
+  const movDisc = (movX, movY) => {
+    const { memo, selectedDisc, timePlayer } = state;
+    const playerColor = timePlayer;
+    const rol = selectedDisc.rol;
+    let Disc = DiscFactory(playerColor, rol);
+    const virtualMemo = Math.abs(movX - selectedDisc.x) >= 2 && rol === 'peon'
+      ? peonEat(movX, movY)
+      : rol === 'king' ? kingEat(movX, movY)
+        : memo;
     virtualMemo[selectedDisc.x][selectedDisc.y] = 0;
+    // eslint-disable-next-line no-multi-assign
     if (rol === 'peon' && checkArriveEndCellOfBoard(movX, movY, playerColor)) {
       Disc = DiscFactory(playerColor, 'king');
     }
-    virtualMemo[movX][movY] = Disc;
-    console.log(checkKeepMov(movX, movY));
+    virtualMemo[movX][movY] = Disc; // MOV DISC TO THE NEW POSITION
     endTurn();
+
     // ADHIERER EL MOVIMIENTO A LA MATRIZ
     dispatch({
       type: SET_BOARD_MOV,
@@ -215,8 +252,8 @@ const BoardState = (props) => {
 
   // MOVIMINETO DE PEON
   const peonAvPlaces = () => {
-    const { avaliablePlaces, selectedDisc, memo, timePlayer } = state;
-    const VirtualAvPlaces = avaliablePlaces;
+    const { availablePlaces, selectedDisc, memo, timePlayer } = state;
+    const VirtualAvPlaces = availablePlaces;
 
     const opponent = timePlayer === 'white' ? 'black' : 'white';
     /*eslint-disable */
@@ -235,10 +272,13 @@ const BoardState = (props) => {
     ['left', 'right'].forEach((side) => {
       const xAdd = sidesAdd[playerDirecction[timePlayer]];
       const yAdd = sidesAdd[side];
+      // check if next cell its free
       if (checkFreeCell(selectedDisc.x + xAdd, selectedDisc.y + yAdd, playerDirecction[timePlayer], side, memo)) {
         VirtualAvPlaces[selectedDisc.x + xAdd][selectedDisc.y + yAdd] = 'g';
-      } else if (checkFreeCell(selectedDisc.x + xAdd, selectedDisc.y + yAdd, playerDirecction[timePlayer], side, memo)) {
-        if (memo[selectedDisc.x + xAdd][selectedDisc.y + yAdd].color === opponent && memo[selectedDisc.x + (xAdd * 2)][selectedDisc.y + (yAdd * 2)] === 0) {
+        // else check if is opponent in next cell
+      } else if (checkDiscColorInCell(selectedDisc.x + xAdd, selectedDisc.y + yAdd, playerDirecction[timePlayer], side, memo, opponent)) {
+        // check if the next cell to the opponent its free
+        if (checkFreeCell(selectedDisc.x + (xAdd * 2), selectedDisc.y + (yAdd * 2), playerDirecction[timePlayer], side, memo)) {
           VirtualAvPlaces[selectedDisc.x + (xAdd * 2)][selectedDisc.y + (yAdd * 2)] = 'g';
         }
       }
@@ -249,10 +289,11 @@ const BoardState = (props) => {
       payload: VirtualAvPlaces,
     });
   };
-
+  // MOVIMIENTO REY
   const kingAvPlaces = () => {
-    const { avaliablePlaces, sizeMatrizX, selectedDisc, memo } = state;
-    const VirtualAvPlaces = avaliablePlaces;
+    const { availablePlaces, sizeMatrizX, selectedDisc, memo, timePlayer } = state;
+    const VirtualAvPlaces = availablePlaces;
+    const opponentColor = timePlayer === 'white' ? 'black' : 'white';
     /*eslint-disable */
     const sidesAdd = {
       'left': -1,
@@ -260,17 +301,42 @@ const BoardState = (props) => {
       'down': 1,
       'top': -1,
     };
-      /* eslint-enable */
+
     const cantMov = sizeMatrizX;
+
+      let skipObj = {
+          'downleft': true,
+          'downright': true,
+          'topleft': true,
+          'topright': true,
+      };
+      let cantDiscInRoad = {
+          'downleft': 0,
+          'downright': 0,
+          'topleft': 0,
+          'topright': 0,
+      }
+      /* eslint-enable */
+
     // eslint-disable-next-line no-plusplus
     for (let i = 1; i <= cantMov; i++) {
       ['down', 'top'].forEach((vSide) => {
         ['left', 'right'].forEach((side) => {
           const xAdd = sidesAdd[vSide] * i;
           const yAdd = sidesAdd[side] * i;
-          // console.log({ vS: vSide, s: side, x: selectedDisc.x + xAdd, y: selectedDisc.y + yAdd, check: checkFreeCell(selectedDisc.x + xAdd, selectedDisc.y + yAdd, vSide, side, memo, selectedDisc.rol) });
-          if (checkFreeCell(selectedDisc.x + xAdd, selectedDisc.y + yAdd, vSide, side, memo)) {
-            VirtualAvPlaces[selectedDisc.x + xAdd][selectedDisc.y + yAdd] = 'g';
+          const approve = skipObj[vSide + side];
+
+          // check empty next cell
+          if (checkFreeCell(selectedDisc.x + xAdd, selectedDisc.y + yAdd, vSide, side, memo) && approve) {
+            // eslint-disable-next-line no-unused-expressions
+            cantDiscInRoad[(vSide + side)] <= 1 ? VirtualAvPlaces[selectedDisc.x + xAdd][selectedDisc.y + yAdd] = 'g' : '';
+            // else check if is opponent in next cell
+          } else if (checkDiscColorInCell(selectedDisc.x + xAdd, selectedDisc.y + yAdd, vSide, side, memo, opponentColor) && approve) {
+            // eslint-disable-next-line no-plusplus,no-unused-expressions
+            cantDiscInRoad[(vSide + side)] += 1;
+          } else if (checkDiscColorInCell(selectedDisc.x + xAdd, selectedDisc.y + yAdd, vSide, side, memo, timePlayer) && approve) {
+            skipObj[vSide + side] = false;
+            cantDiscInRoad[(vSide + side)] += 1;
           }
         });
       });
@@ -286,7 +352,6 @@ const BoardState = (props) => {
   const checkMovement = (rol) => {
     switch (rol) {
       case PEON:
-        // console.log(`state.selectedDisc.x:${state.selectedDisc.x} <= state.sizeBoardX:${state.sizeBoardX}`);
         peonAvPlaces();
         break;
       case KING:
@@ -302,16 +367,14 @@ const BoardState = (props) => {
     if (color === state.timePlayer) {
       dispatch({
         type: SET_AVALIABLE_PLACES,
-        payload: initialState.avaliablePlaces,
+        payload: initialState.availablePlaces,
       });
       // Sube al estado el disco seleccionado
       dispatch({
         type: SET_SELECTED_DISC,
         payload: { x, y, rol },
       });
-      return;
     }
-    console.log(`TURNO DEL JUGADOR ${state.timePlayer === 'white' ? 'BLANCO' : 'NEGRO'}`);
   };
 
 
@@ -325,7 +388,9 @@ const BoardState = (props) => {
           cellSize: state.cellSize,
           timePlayer: state.timePlayer,
           selectedDisc: state.selectedDisc,
-          avaliablePlaces: state.avaliablePlaces,
+          availablePlaces: state.availablePlaces,
+          pointsWhitePlayer: state.pointsWhitePlayer,
+          pointsBlackPlayer: state.pointsBlackPlayer,
           checkPlayerTurn,
           movDisc,
           checkMovement,

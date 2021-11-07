@@ -12,7 +12,7 @@ export default (state, action) => {
     case SET_AVALIABLE_PLACES:
       return {
         ...state,
-        avaliablePlaces: payload,
+        availablePlaces: payload,
       };
     case SET_PLAYER_TURN:
       return {
@@ -29,6 +29,16 @@ export default (state, action) => {
       return {
         ...state,
         keepMov: payload,
+      };
+    case 'SET_WHITE_POINTS':
+      return {
+        ...state,
+        pointsWhitePlayer: state.pointsWhitePlayer + 1,
+      };
+    case 'SET_BLACK_POINTS':
+      return {
+        ...state,
+        pointsBlackPlayer: state.pointsBlackPlayer + 1,
       };
 
     default:

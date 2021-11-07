@@ -6,12 +6,12 @@ import '~/scss/Cell.scss'
 export const Cell = (props) => {
 
 
-    const {pos, cellSize, children, avaliablePlaces, movDisc, memo, selectedDisc, playerColor, selected} = props
+    const {pos, cellSize, children, availablePlaces, movDisc, selectedDisc, playerColor, selected} = props
 
     useEffect(() => {
     },[])
 
-    function checkpair(row, col, avaliablePlaces, selected) {
+    function checkpair(row, col, availablePlaces, selected) {
         let cell = {
             width: `${cellSize}px`,
             height: `${cellSize}px`,
@@ -32,7 +32,7 @@ export const Cell = (props) => {
         if(selected === true){
             cell.boxShadow = 'rgb(0 78 255) 0px 0px 10px inset'
         }
-        if(avaliablePlaces === 'g'){
+        if(availablePlaces === 'g'){
             cell.boxShadow = 'inset 0px 0px 10px #56ff00'
             cell.cursor = 'pointer'
         }
@@ -40,15 +40,15 @@ export const Cell = (props) => {
         return cell
     }
     const handleClickCell = useCallback(() => {
-        movDisc(pos.x, pos.y, memo, selectedDisc, playerColor, selectedDisc.rol)
-    },[pos.x, pos.y, memo, selectedDisc, playerColor])
+        movDisc(pos.x, pos.y)
+    },[pos.x, pos.y, selectedDisc, playerColor])
 
 
-    if(avaliablePlaces){
-        const color = checkpair(pos.x, pos.y, avaliablePlaces[pos.x][pos.y], selected)
+    if(availablePlaces){
+        const color = checkpair(pos.x, pos.y, availablePlaces[pos.x][pos.y], selected)
 
         return (
-            avaliablePlaces[pos.x][pos.y] === 'g'
+            availablePlaces[pos.x][pos.y] === 'g'
                 ?   <li onClick={()=> handleClickCell()} className={'boneCell'} style={color} key={`${pos.x}-${pos.y}`}>{children}</li>
                 :   <li className={'boneCell'} style={color} key={`${pos.x}-${pos.y}`}>{children}</li>
 
@@ -65,7 +65,7 @@ export const Cell = (props) => {
 Cell.propTypes = {
     pos: PropTypes.object,
     cellSize: PropTypes.number,
-    avaliablePlaces: PropTypes.array,
+    availablePlaces: PropTypes.array,
     movDisc: PropTypes.func.isRequired,
     memo: PropTypes.array,
     selectedDisc: PropTypes.object,

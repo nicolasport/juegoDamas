@@ -11,13 +11,15 @@ export const Board = (props) => {
         sizeBoardX,
         cellSize,
         memo,
-        avaliablePlaces: availablePlaces,
+        availablePlaces,
         movDisc,
         checkMovement,
         selectedDisc,
         checkPlayerTurn,
         timePlayer,
-        keepMov
+        keepMov,
+        pointsWhitePlayer,
+        pointsBlackPlayer
     } = useContext(BoardContext);
 
     useEffect(()=> {
@@ -33,7 +35,7 @@ export const Board = (props) => {
         }
         let selected = false
         const render =
-            <>
+        <>
             <ul className={'boneBoard'} style={styleBoard}>
                 {memo.map((row, indexRow) =>
                 row.map((col, indexCol) =>
@@ -42,9 +44,8 @@ export const Board = (props) => {
                     <Cell key={`Cell>${indexRow}-${indexCol}`}
                           pos={{x: indexRow, y:indexCol}}
                           cellSize={cellSize}
-                          avaliablePlaces={availablePlaces}
+                          availablePlaces={availablePlaces}
                           movDisc={movDisc}
-                          memo={memo}
                           selectedDisc={selectedDisc}
                           playerColor={timePlayer}
                           selected={selected}
@@ -65,9 +66,12 @@ export const Board = (props) => {
                     )
                 )}
             </ul>
-            </>
-
-
+            <div>
+                <h1>Jugador en turno: {timePlayer.toUpperCase()}</h1>
+                <h1>Puntos Jugador Blanco: {pointsWhitePlayer}</h1>
+                <h1>Puntos Jugador Negro: {pointsBlackPlayer}</h1>
+            </div>
+        </>
 
     return render
 
