@@ -19,7 +19,8 @@ export const Board = (props) => {
         timePlayer,
         keepMov,
         pointsWhitePlayer,
-        pointsBlackPlayer
+        pointsBlackPlayer,
+        cantDiscPerPlayer
     } = useContext(BoardContext);
 
     useEffect(()=> {
@@ -60,17 +61,23 @@ export const Board = (props) => {
                                   checkMovement={checkMovement}
                                   selectedDisc={selectedDisc}
                                   checkPlayerTurn={checkPlayerTurn}
+                                  keepMov={keepMov}
                                   /> : ''}
                     </Cell>
                 </>
                     )
                 )}
             </ul>
-            <div>
-                <h1>Jugador en turno: {timePlayer.toUpperCase()}</h1>
-                <h1>Puntos Jugador Blanco: {pointsWhitePlayer}</h1>
-                <h1>Puntos Jugador Negro: {pointsBlackPlayer}</h1>
-            </div>
+            {pointsWhitePlayer === cantDiscPerPlayer
+                ? <h1>White Player Win</h1>
+                : pointsBlackPlayer === cantDiscPerPlayer
+                    ? <h1>Black Player Win</h1>
+                    :  <div>
+                            <h1>Player's turn: {timePlayer.toUpperCase()}</h1>
+                            <h1>Points of White Player: {pointsWhitePlayer}</h1>
+                            <h1>Points of Black Player: {pointsBlackPlayer}</h1>
+                       </div>
+            }
         </>
 
     return render
