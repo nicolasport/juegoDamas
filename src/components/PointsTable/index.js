@@ -1,3 +1,3 @@
-import { PointsTable } from './Disc';
+import { PointsTable } from './PointsTable';
 
 export default PointsTable;

@@ -6,6 +6,7 @@ type TyObjSides = {
     'top':number,
 
 }
+
 type TySide = 'left' | 'top' | 'right' | 'down';
 
 export class Coordinate{
@@ -38,6 +39,11 @@ export class Coordinate{
         return Math.abs(this.x - newCoordinate.x)
     }
     sideOfMov(coordinate:Coordinate):{sideV:TySide[], sideH:TySide[]}{
+        /*
+        @params
+            sideH -> lado horizontal
+            sideV -> lado verticaal
+        */
         const {x: newX, y:newY} = coordinate
         const sideV:TySide[] = newX >= this.x ? ['down'] : ['top']
         const sideH:TySide[] = newY >= this.y ? ['right'] : ['left']
@@ -262,6 +268,11 @@ export class Board{
                 (coordinate.y) <= this._matrixSizeY
     }
     private stepsCounter(coordinate:Coordinate, sideV:TySide, sideH:TySide, rol:string) {
+        /*
+        @params
+            sideH -> lado horizontal
+            sideV -> lado verticaal
+        */
         //return number of steps on road SideV+SideH to move if is Pawn return 2
         const {x, y} = coordinate
         let result = 1 //Pawn
