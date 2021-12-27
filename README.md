@@ -1,6 +1,6 @@
 # Juego de Damas
 
->Estado del proyecto
+>## Estado del proyecto
 >- [x] Generacion de tablero
 >- [x] Funcion checkAvPlaces :arrow_right: determina lugares libres
 >- [x] Funcion eatEnemy :arrow_right: determina borrar(comer) enemigo
