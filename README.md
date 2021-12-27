@@ -1,4 +1,4 @@
-#Juego de Damas
+# Juego de Damas
 
 >Estado del proyecto
 >- [x] Generacion de tablero
@@ -10,16 +10,16 @@
 >- [ ] UI :arrow_right: mecanica de puntos
 >- [ ] UI :arrow_right: mostrar puntos de los jugadores
 
-> ##Captura de tablero
+> ## Captura de tablero
 >![img_3.png](img_3.png)
-> ####Damas
+> #### Damas
 > ![img_4.png](img_4.png)
 > ![img_5.png](img_5.png)
 ><br><br>
 
  <br><br>
 
-> ##Diagrama de Clases 
+> ## Diagrama de Clases 
 > ![img_2.png](img_2.png)
 ><br><br>
 
