@@ -19,6 +19,7 @@ export interface IstateContext {
     checkPlayerTurn: Function,
     checkMovement: Function,
     movDisc: Function
+    winPlayer: null | string
 }
 
 

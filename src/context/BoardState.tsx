@@ -71,9 +71,15 @@ const BoardState = (props:any) => {
             }
         }
 
-
-
-
+        //verifica que puedan moverse las fichas del enemigo
+        console.log("-> board.checkAllPiecesCantMove(state.timePlayer)", board.checkAllPiecesCantMove(state.timePlayer)=== 0);
+        if(board.checkAllPiecesCantMove(state.timePlayer) === 0){
+            console.log("PLAYER WIN", state.timePlayer)
+            actionsDispatch.setWinPlayer(state.timePlayer)
+        }
+        if(eatEnemy){
+            actionsDispatch.addPlayerPoints(selectedDisc.color)
+        }
         // Adhiere el movimiento al estado
         actionsDispatch.setBoard(board.memo)
 
@@ -95,14 +101,15 @@ const BoardState = (props:any) => {
                 timePlayer: state.timePlayer,
                 selectedDisc: state.selectedDisc,
                 availablePlaces: state.availablePlaces,
-                pointsWhitePlayer: 10, //TODO corregir
-                pointsBlackPlayer: 10, //TODO corregir
+                pointsWhitePlayer: state.pointsWhitePlayer, //TODO corregir
+                pointsBlackPlayer: state.pointsBlackPlayer, //TODO corregir
                 keepMov: false,
                 cantDiscPerPlayer: 0, //TODO corregir
                 board,
                 checkPlayerTurn,
                 checkMovement,
                 movDisc,
+                winPlayer: state.winPlayer,
             }
         }
         >
