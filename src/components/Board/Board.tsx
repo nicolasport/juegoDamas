@@ -51,6 +51,7 @@ export const Board = () => {
                 )}
             </Style.Board>
             <PointsTable/>
+
         </>
     )
 

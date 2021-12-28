@@ -287,7 +287,42 @@ export class Board{
         }
         return result
     }
+    private getAllPiecesSameColor(enemyColor:TyColor):Array<Pawn|King> {
+        let allEnemyPieces: Array<Pawn|King> = []
+        this._memo.map((cell:Array<Pawn | King>)  => {
+            if( cell.filter((c: Pawn|King) => c?.color === enemyColor).length > 0){
 
+                allEnemyPieces.push(...cell.filter((c: Pawn|King) => c?.color === enemyColor));
+                return allEnemyPieces //dont needed
+            }
+            return null //dont needed
+        })
+        return allEnemyPieces
+    }
+    private getContPiecesCanMov(allEnemyPieces:any[]):number{
+        let contPiecesCanMov: number = 0
+        allEnemyPieces.forEach((piece) => {
+            this.checkAvPlaces(piece).map(e => {
+                if(e){
+                    if (e.filter((e: any) => e === true).length > 0) {
+                        contPiecesCanMov++
+                        return contPiecesCanMov //dont needed
+                    }
+
+
+                }
+                return null //dont needed
+            })
+
+        })
+        return contPiecesCanMov
+    }
+    private static enemyColor (timePlayer:TyColor):TyColor{
+        return timePlayer === 'white'
+            ? 'black'
+            : 'white'
+    }
+    
     get_emptyAvPlaces(){
         return Board.avPlacesGenerator(this._sizeX, this._sizeY)
     }
@@ -408,62 +443,11 @@ export class Board{
 
 
     }
+    checkAllPiecesCantMove(timePlayer:TyColor){
+        const enemyColor = Board.enemyColor(timePlayer)
+        const allEnemyPieces = this.getAllPiecesSameColor(enemyColor)
 
-    /*
-    EXPERIMENTAL - SEPARATE LOGIC FROM LOOP AVPLACES
-    logic_avPlaces(coordinate:Coordinate, nextCoordinate:Coordinate, color:TyColor, step:number, contPiece:number) {
-        if(this.isFreeCell_StorePosition(coordinate)) {
-            return [true, step, contPiece]
-        }
-        else if (this.isEnemy(coordinate, color)) {
-            if(contPiece === 0){
-                contPiece++
-                if(this.coordinateIsInBoard(nextCoordinate)){
-                    if (this.isFreeCell_StorePosition(nextCoordinate)) {
-                        //to jump enemy and next free cell on next check
-                        return [true, step++, contPiece++]
-                    }
-                }
-            }else{return [false, step, contPiece]}
-        }else{return [false, step, contPiece]}
-       return [false, step, contPiece]
+        return this.getContPiecesCanMov(allEnemyPieces)
     }
 
-    checkAvPlaces(selectedPiece: Pawn | King ):any[]{
-        const rol = selectedPiece!.rol!
-        const {sideV, sideH} = selectedPiece!.avSideToMov!
-        this.resetAvPlaces()
-
-
-        sideV.forEach((sideV) => {
-            sideH.forEach((sideH) => {
-                //short way to call ^^^
-                const nextCoordinate = (step:number) => selectedPiece!.coordinate.stepsToMove(step, sideV, sideH)
-                const stepsAvForThisSide = this.stepsCounter(selectedPiece.coordinate, sideV, sideH, rol)
-                if(stepsAvForThisSide > 0){
-                            let contPiece = 0
-                            let boolean:boolean
-                            for(let step=1; step<=stepsAvForThisSide; step++){
-                                console.log("-> step", step);
-                                if(this.coordinateIsInBoard(nextCoordinate(step))){
-                                    // @ts-ignore
-                                    [boolean, step, contPiece] = this.logic_avPlaces(
-                                            nextCoordinate(step),
-                                            nextCoordinate(step+1),
-                                            selectedPiece!.color,
-                                            step,
-                                            contPiece)
-                                    if(!boolean){break}
-                                }else{break}
-                            }
-                    }
-
-
-            });
-        })
-
-        return this._avPlaces
-
-    }
-    */
 }
