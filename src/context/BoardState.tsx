@@ -2,6 +2,7 @@ import React from 'react';
  import useBoard from 'src/hook/UseBoard';
 import BoardContext from 'src/context/BoardContext';
 import {Coordinate, Pawn, King} from "src/class/gameLogicClass";
+import {TAvPlaces, TPlayer, TSelDisc} from "../ts/types";
 
 
 const BoardState = (props:any) => {
@@ -15,7 +16,7 @@ const BoardState = (props:any) => {
 
         if (!keepMov) {
             // change player
-            let playerToPlay = null;
+            let playerToPlay:TPlayer = null;
             if (state.playerTurn === 'white') {
                 playerToPlay = 'black';
             } else {
@@ -43,10 +44,10 @@ const BoardState = (props:any) => {
 
     }
 
-    const checkMovement = (piece: Pawn | King) => {
-        let avPlaces: Array <0|true>
+    const checkMovement = (piece: Pawn|King|null) => {
+        let avPlaces: TAvPlaces[][]
 
-        avPlaces = board.checkAvPlaces(piece)
+        avPlaces = board.checkAvPlaces(piece!)
 
         actionsDispatch.setAvPlaces(avPlaces)
     }
@@ -60,13 +61,13 @@ const BoardState = (props:any) => {
 
         let keepMov = false
         //Check if te cell to mov is the end of Board for Pawn
-        if(selectedDisc.rol === 'Pawn' && board.checkArriveEndCellOfBoard(newPosition)){
+        if(selectedDisc!.rol === 'Pawn' && board.checkArriveEndCellOfBoard(newPosition)){
             //Convert to King
-            board.converToKing(selectedDisc)
+            board.converToKing(selectedDisc!)
         }else{
             //Check if can eat again
             if(isEatEnemy){
-                if(board.checkEatAgain(selectedDisc)){
+                if(board.checkEatAgain(selectedDisc!)){
                     keepMov = true
                 }
             }
@@ -76,7 +77,7 @@ const BoardState = (props:any) => {
         if(board.getQtyOfEnemyPiecesCantMov(state.playerTurn) === 0){
             actionsDispatch.setWinPlayer(state.playerTurn)
         }
-        if(isEatEnemy) actionsDispatch.addPlayerPoints(selectedDisc.color)
+        if(isEatEnemy) actionsDispatch.addPlayerPoints(selectedDisc!.color)
 
         // Adhiere el movimiento al estado memo y keepMov
         actionsDispatch.setBoard(board.memo)

@@ -24,7 +24,7 @@ export const Cell = (props:TpropsCell) => {
     // @ts-ignore TODO ver tsIgnored
     const isAvPlaces = availablePlaces!.length > 0
     // @ts-ignore TODO ver tsIgnored
-    const isFreeCell =  availablePlaces?.[cellCoordinate.x][cellCoordinate.y]
+    const isFreeCell:boolean =  availablePlaces?.[cellCoordinate.x][cellCoordinate.y]
 
 
     return (
@@ -34,7 +34,7 @@ export const Cell = (props:TpropsCell) => {
                             width={cellSize!-2}
                             height={cellSize!}
                             selected={selected!}
-                            isFreeCell={isFreeCell}
+                            isFreeCell={isFreeCell!}
                             row={cellCoordinate.x}
                             col={cellCoordinate.y}
                             onClick={isFreeCell ? ()=> handleClickCell() : ()=>null}

@@ -7,37 +7,36 @@ import {
     SET_WHITE_POINTS,
     SET_BLACK_POINTS, SET_WIN_PLAYER,
 } from 'src/context/actionsTypes';
-import {IAction, IState} from "../ts/interfaces";
+import {IState} from "src/ts/interfaces";
+import {TAction} from "src/ts/types";
 
 
-const reducer = (state:IState, action:IAction) => {
-  const { payload, type } = action;
-
-  switch (type) {
-    case SET_SELECTED_DISC:
+const reducer = (state:IState, action:TAction):IState => {
+  switch (action.type) {
+      case SET_SELECTED_DISC:
         return {
         ...state,
-        selectedDisc: payload,
+        selectedDisc: action.payload,
       };
     case SET_AVAILABLE_PLACES:
       return {
         ...state,
-        availablePlaces: payload,
+        availablePlaces: action.payload,
       };
     case SET_PLAYER_TURN:
       return {
         ...state,
-        playerTurn: payload,
+        playerTurn: action.payload,
       };
     case SET_BOARD_MOV:
       return {
         ...state,
-        memo: payload,
+        memo: action.payload,
       };
     case SET_KEEP_MOV:
       return {
         ...state,
-        keepMov: payload,
+        keepMov: action.payload,
       };
     case SET_WHITE_POINTS:
       return {
@@ -52,7 +51,7 @@ const reducer = (state:IState, action:IAction) => {
     case SET_WIN_PLAYER:
       return {
         ...state,
-        winPlayer: payload,
+        winPlayer: action.payload,
       };
 
     default:

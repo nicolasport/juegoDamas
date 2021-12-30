@@ -1,5 +1,5 @@
 import {Board, Coordinate, King, Pawn} from "src/class/gameLogicClass";
-import {TyColor, TMemo, TPlayer, TAvPlaces, TSelDisc, IActionType} from 'src/ts/types'
+import {TMemo, TPlayer, TAvPlaces, TSelDisc} from 'src/ts/types'
 
 
 export interface IState {
@@ -8,9 +8,9 @@ export interface IState {
     pointsWhitePlayer: number,
     pointsBlackPlayer: number,
     playerTurn: TPlayer, // Player in turn
-    selectedDisc: TSelDisc, //Selected disc by user
-    availablePlaces: Array <TAvPlaces>, //Matrix of available places to mov of Selected Disc
-    winPlayer: null | TyColor
+    selectedDisc: Pawn | King | null, //Selected disc by user
+    availablePlaces: TAvPlaces[][], //Matrix of available places to mov of Selected Disc
+    winPlayer: TPlayer
 }
 
 export interface IStateContext extends IState{
@@ -21,19 +21,12 @@ export interface IStateContext extends IState{
     movDisc: (newPosition: Coordinate) => void
 }
 
-
-
 export interface IActionCreator {
-    setAvPlaces: (payload:any[]) => void,
+    setAvPlaces: (payload:TAvPlaces[][]) => void,
     setSelectedDisc: (payload:TSelDisc) => void,
     setPlayerTurn: (payload:TPlayer) => void,
-    setBoard: (payload:TMemo) => void,
+    setBoard: (payload:any[] /*TODO fix any type*/) => void,
     setKeepMov: (payload:boolean) => void,
     addPlayerPoints: (color:string) => void,
-    setWinPlayer: (color:string) => void,
-}
-
-export interface IAction {
-    type: IActionType,
-    payload: any
+    setWinPlayer: (color:TPlayer) => void,
 }

@@ -1,4 +1,4 @@
-import {TSide, TObjSides, TyColor, TPlayer} from 'src/ts/types'
+import {TSide, TObjSides, TyColor, TPlayer, TAvPlaces, TMemo} from 'src/ts/types'
 
 export class Coordinate{
     x: number;
@@ -151,17 +151,17 @@ export class Board{
         this._rowOfDisc = value;
     }
 
-    get memo(): any[] {
+    get memo(): TMemo[][] {
         return this._memo;
     }
-    set memo(value: any[]) {
+    set memo(value: TMemo[][]) {
         this._memo = value;
     }
 
-    get avPlaces(): any[] {
+    get avPlaces(): TAvPlaces[][] {
         return this._avPlaces;
     }
-    set avPlaces(value: any[]) {
+    set avPlaces(value: TAvPlaces[][]) {
         this._avPlaces = value;
     }
 
@@ -177,8 +177,8 @@ export class Board{
     private _matrixSizeX: number;
     private _matrixSizeY: number;
     private _rowOfDisc:number
-    private _memo: any[];
-    private _avPlaces: any[];
+    private _memo: any[]; //TODO fix type
+    private _avPlaces: any[]; //TODO fix type
     private readonly _rowOfPieces:number;
     private _cantDiscPerPlayer: number;
     private _cellSize: number
@@ -195,11 +195,11 @@ export class Board{
         this._cantDiscPerPlayer = Math.floor(sizeY / 2) * this._rowOfPieces
         this._cellSize = 70 //constant
     }
-    private static avPlacesGenerator(sizeX:number, sizeY:number){
+    private static avPlacesGenerator(sizeX:number, sizeY:number):TAvPlaces[][]{
         const avPlaces: any[] = [];
 
         for (let i = 0; i < sizeX; i++) {
-            const row = [];
+            const row:any[] = [];
 
             for (let j = 0; j < sizeY; j++) {
                 row.push(0);
@@ -317,7 +317,7 @@ export class Board{
         })
         return contPiecesCanMov
     }
-    private static enemyColor (playerTurn:TPlayer):TPlayer{
+    private static enemyColor (playerTurn:TPlayer):TyColor{
         return playerTurn === 'white'
             ? 'black'
             : 'white'
@@ -333,12 +333,12 @@ export class Board{
     checkArriveEndCellOfBoard(coordinate: Coordinate):boolean{
         return Math.abs(coordinate.x - this._matrixSizeX) === 0 || Math.abs(coordinate.x - this._matrixSizeX) === this._matrixSizeX
     }
-    movPiece(piece: Pawn | King, movCoordinate:Coordinate){
+    movPiece(piece: Pawn | King | null, movCoordinate:Coordinate){
         //Borro la pieza en el lugar origen del tablero
-        const {coordinate:{x,y}} = piece
+        const {coordinate:{x,y}} = piece!
         this._memo[x][y] = 0
         //Seteo sus nuevas coordenadas
-        piece.mov(movCoordinate)
+        piece!.mov(movCoordinate)
         //Actualizo el en esta nueva posicion la pieza
         const {x : newX,y: newY} = movCoordinate
         this._memo[newX][newY] = piece
@@ -376,7 +376,7 @@ export class Board{
 
         return this._avPlaces
     }
-    eatEnemy(selectedPiece: Pawn | King, newCoordinate:Coordinate):boolean{
+    eatEnemy(selectedPiece: Pawn | King | null, newCoordinate:Coordinate):boolean{
         const {sideH, sideV} = selectedPiece!.coordinate.sideOfMov(newCoordinate);
         this.resetAvPlaces()
 
@@ -447,7 +447,7 @@ export class Board{
 
 
     }
-    getQtyOfEnemyPiecesCantMov(playerTurn:TyColor){
+    getQtyOfEnemyPiecesCantMov(playerTurn:TPlayer){
         const enemyColor = Board.enemyColor(playerTurn)
         const allEnemyPieces = this.getAllPiecesSameColor(enemyColor)
 

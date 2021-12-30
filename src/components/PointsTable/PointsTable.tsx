@@ -8,7 +8,7 @@ export const PointsTable = () => {
         winPlayer === null ?
             <div style={{display: "block", marginTop: "60px"}}>
                 <div>
-                    <h1>Player's turn: {playerTurn!.toUpperCase()}</h1>
+                    <h1>Player's turn: {playerTurn}</h1>
                     <h1>Points of White Player: {pointsWhitePlayer}</h1>
                     <h1>Points of Black Player: {pointsBlackPlayer}</h1>
                 </div>
