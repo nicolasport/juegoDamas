@@ -21,9 +21,9 @@ const sizeBoardY:number = 10 // Cantidad de columnas a lo ancho del tablero
 
 const board = new Board(sizeBoardX, sizeBoardY);
 // !TODO clear test config
-board.memo[1][2] = 0
-board.memo[0][1] = 0
-board.memo[2][3] = 0
+// board.memo[1][2] = 0
+// board.memo[0][1] = 0
+// board.memo[2][3] = 0
 // board.memo[0][3] = 0
 // board.memo[0][5] = 0
 // board.memo[0][7] = 0

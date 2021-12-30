@@ -1,5 +1,5 @@
 import {Board, Coordinate, King, Pawn} from "src/class/gameLogicClass";
-import {TyColor, TMemo, TPlayer, TAvPlaces, TSelDisc} from 'src/ts/types'
+import {TyColor, TMemo, TPlayer, TAvPlaces, TSelDisc, IActionType} from 'src/ts/types'
 
 
 export interface IState {
@@ -21,17 +21,6 @@ export interface IStateContext extends IState{
     movDisc: (newPosition: Coordinate) => void
 }
 
-
-
-export type IActionType =
-    'SET_SELECTED_DISC'
-    |'SET_AVAILABLE_PLACES'
-    |'SET_PLAYER_TURN'
-    |'SET_BOARD_MOV'
-    |'SET_KEEP_MOV'
-    |'SET_WHITE_POINTS'
-    |'SET_BLACK_POINTS'
-    |'SET_WIN_PLAYER'
 
 
 export interface IActionCreator {

@@ -15,5 +15,14 @@ export type TObjSides = {
     'down':number,
     'top':number,
 };
+export type IActionType =
+    'SET_SELECTED_DISC'
+    |'SET_AVAILABLE_PLACES'
+    |'SET_PLAYER_TURN'
+    |'SET_BOARD_MOV'
+    |'SET_KEEP_MOV'
+    |'SET_WHITE_POINTS'
+    |'SET_BLACK_POINTS'
+    |'SET_WIN_PLAYER'
 
 export type TSide = 'left' | 'top' | 'right' | 'down';
