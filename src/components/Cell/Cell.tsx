@@ -1,7 +1,7 @@
 import React, {useCallback, useContext} from 'react';
-import {Coordinate} from "../../logicGameClases/gameLogicClass";
-import * as Style from "../styleComponents/Global.style";
-import BoardContext from "../../context/BoardContext";
+import {Coordinate} from "src/class/gameLogicClass";
+import * as Style from "src/components/styleComponents/Global.style";
+import BoardContext from "src/context/BoardContext";
 
 type TpropsCell = {
     cellCoordinate: { x:number, y:number },
@@ -11,8 +11,9 @@ type TpropsCell = {
 
 export const Cell = (props:TpropsCell) => {
 
-    const {cellSize, availablePlaces, movDisc} =  useContext(BoardContext)
+    const {board, availablePlaces, movDisc} =  useContext(BoardContext)
     const {cellCoordinate, children, selected} = props
+    const {cellSize} = board!
 
     const handleClickCell = useCallback(() => {
         movDisc!(new Coordinate(cellCoordinate.x, cellCoordinate.y));

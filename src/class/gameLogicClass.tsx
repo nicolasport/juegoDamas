@@ -1,13 +1,4 @@
-export type TyColor = 'black' | 'white';
-type TyObjSides = {
-    'left':number,
-    'right':number,
-    'down':number,
-    'top':number,
-
-}
-
-type TySide = 'left' | 'top' | 'right' | 'down';
+import {TSide, TObjSides, TyColor, TPlayer} from 'src/ts/types'
 
 export class Coordinate{
     x: number;
@@ -19,13 +10,13 @@ export class Coordinate{
     clone(): Coordinate {
         return new Coordinate(this.x, this.y)
     }
-    stepsToMove(step:number, sideV:TySide, sideH:TySide):Coordinate{
+    stepsToMove(step:number, sideV:TSide, sideH:TSide):Coordinate{
         /*
         @params
             sideH -> lado horizontal
             sideV -> lado verticaal
         */
-        const sideAdd:TyObjSides = {
+        const sideAdd:TObjSides = {
             'left':-1,
             'right':1,
             'down':1,
@@ -38,15 +29,15 @@ export class Coordinate{
     stepsDifference(newCoordinate:Coordinate){
         return Math.abs(this.x - newCoordinate.x)
     }
-    sideOfMov(coordinate:Coordinate):{sideV:TySide[], sideH:TySide[]}{
+    sideOfMov(coordinate:Coordinate):{sideV:TSide[], sideH:TSide[]}{
         /*
         @params
             sideH -> lado horizontal
             sideV -> lado verticaal
         */
         const {x: newX, y:newY} = coordinate
-        const sideV:TySide[] = newX >= this.x ? ['down'] : ['top']
-        const sideH:TySide[] = newY >= this.y ? ['right'] : ['left']
+        const sideV:TSide[] = newX >= this.x ? ['down'] : ['top']
+        const sideH:TSide[] = newY >= this.y ? ['right'] : ['left']
         return {sideV, sideH}
     }
     isEqual(coordiante:Coordinate){
@@ -87,12 +78,12 @@ export class Piece {
 }
 
 export class Pawn extends Piece{
-    avSideToMov: {sideV:TySide[], sideH:TySide[]}
+    avSideToMov: {sideV:TSide[], sideH:TSide[]}
 
     constructor(color: TyColor, coordinate: Coordinate) {
         super(color, coordinate);
-        let sideV:TySide[];
-        const sideH:TySide[] = ['left', 'right'];
+        let sideV:TSide[];
+        const sideH:TSide[] = ['left', 'right'];
         switch (color) {
             case "white":
                 sideV = ['down'];
@@ -107,17 +98,24 @@ export class Pawn extends Piece{
 
 }
 export class King extends Piece{
-    avSideToMov: {sideV:TySide[], sideH:TySide[]}
+    avSideToMov: {sideV:TSide[], sideH:TSide[]}
 
     constructor(color: TyColor, coordinate: Coordinate) {
         super(color, coordinate);
-        const sideV:TySide[] = ['top', 'down'];
-        const sideH:TySide[] = ['left', 'right'];
+        const sideV:TSide[] = ['top', 'down'];
+        const sideH:TSide[] = ['left', 'right'];
         this.avSideToMov = {sideV, sideH}
     }
 }
 
 export class Board{
+    get cellSize(): number {
+        return this._cellSize;
+    }
+
+    set cellSize(value: number) {
+        this._cellSize = value;
+    }
     get sizeX(): number {
         return this._sizeX;
     }
@@ -183,6 +181,7 @@ export class Board{
     private _avPlaces: any[];
     private readonly _rowOfPieces:number;
     private _cantDiscPerPlayer: number;
+    private _cellSize: number
 
     constructor(sizeX: number, sizeY:number) {
         this._sizeX = sizeX
@@ -194,6 +193,7 @@ export class Board{
         this._avPlaces = Board.avPlacesGenerator(sizeX, sizeY)
         this._rowOfPieces = 3
         this._cantDiscPerPlayer = Math.floor(sizeY / 2) * this._rowOfPieces
+        this._cellSize = 70 //constant
     }
     private static avPlacesGenerator(sizeX:number, sizeY:number){
         const avPlaces: any[] = [];
@@ -267,7 +267,7 @@ export class Board{
                 (coordinate.y) >= 0 &&
                 (coordinate.y) <= this._matrixSizeY
     }
-    private stepsCounter(coordinate:Coordinate, sideV:TySide, sideH:TySide, rol:string) {
+    private stepsCounter(coordinate:Coordinate, sideV:TSide, sideH:TSide, rol:string) {
         /*
         @params
             sideH -> lado horizontal
@@ -317,8 +317,8 @@ export class Board{
         })
         return contPiecesCanMov
     }
-    private static enemyColor (timePlayer:TyColor):TyColor{
-        return timePlayer === 'white'
+    private static enemyColor (playerTurn:TPlayer):TPlayer{
+        return playerTurn === 'white'
             ? 'black'
             : 'white'
     }
@@ -326,10 +326,14 @@ export class Board{
     get_emptyAvPlaces(){
         return Board.avPlacesGenerator(this._sizeX, this._sizeY)
     }
+    converToKing(piece:Pawn|King){
+        const {x, y} = piece.coordinate
+        this._memo[x][y] = new King(piece.color, piece.coordinate)
+    }
     checkArriveEndCellOfBoard(coordinate: Coordinate):boolean{
         return Math.abs(coordinate.x - this._matrixSizeX) === 0 || Math.abs(coordinate.x - this._matrixSizeX) === this._matrixSizeX
     }
-    movPiece(piece: Pawn | any, movCoordinate:Coordinate){
+    movPiece(piece: Pawn | King, movCoordinate:Coordinate){
         //Borro la pieza en el lugar origen del tablero
         const {coordinate:{x,y}} = piece
         this._memo[x][y] = 0
@@ -443,8 +447,8 @@ export class Board{
 
 
     }
-    checkAllPiecesCantMove(timePlayer:TyColor){
-        const enemyColor = Board.enemyColor(timePlayer)
+    getQtyOfEnemyPiecesCantMov(playerTurn:TyColor){
+        const enemyColor = Board.enemyColor(playerTurn)
         const allEnemyPieces = this.getAllPiecesSameColor(enemyColor)
 
         return this.getContPiecesCanMov(allEnemyPieces)

@@ -1,20 +1,21 @@
 /* eslint-disable */
 import React, {useContext} from 'react';
-import {Pawn} from "src/logicGameClases/gameLogicClass";
+import {Pawn} from "src/class/gameLogicClass";
 import * as Style from "../styleComponents/Global.style";
 import BoardContext from "../../context/BoardContext";
 
 
 export const Disc = (props:any) => {
 
-   const {cellSize, checkPlayerTurn, keepMov, selectedDisc, timePlayer} =  useContext(BoardContext)
+   const {board, checkPlayerTurn, keepMov, selectedDisc, playerTurn} =  useContext(BoardContext)
     const {piece} = props
     const {color, coordinate} = piece
+    const {cellSize} = board!
     const rol = piece.constructor.name
 
     const handleClick = (piece: Pawn) => {
        if(( selectedDisc === null || !selectedDisc!.coordinate.isEqual(piece.coordinate) )
-           && piece.color === timePlayer){
+           && piece.color === playerTurn){
                 checkPlayerTurn!(piece)
        }
    }
@@ -38,8 +39,8 @@ export const Disc = (props:any) => {
             height={cellSize!-25}
             color={color}
             rol={rol}
-            onClick={timePlayer===color && canClick ? () => handleClick(piece) : ()=>null}
-            cursorOver={timePlayer===color && canClick}
+            onClick={playerTurn===color && canClick ? () => handleClick(piece) : ()=>null}
+            cursorOver={playerTurn===color && canClick}
         >
 
             {rol === 'King' ? KingSVG : '' }

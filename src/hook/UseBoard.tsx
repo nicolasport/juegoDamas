@@ -1,6 +1,6 @@
 import { useReducer } from 'react';
 import BoardReducer from 'src/context/BoardReducer';
-import {Board, Coordinate, Pawn, King, TyColor} from 'src/logicGameClases/gameLogicClass'
+import {Board, Coordinate, Pawn, King } from 'src/class/gameLogicClass'
 import {
     SET_AVAILABLE_PLACES,
     SET_BOARD_MOV,
@@ -11,28 +11,12 @@ import {
     SET_BLACK_POINTS,
     SET_WIN_PLAYER
 } from "../context/actionsTypes";
-
-interface IState {
-    memo: any[], // Memooria de las piezas del juego
-    keepMov: boolean, // si puede seguir comento enemigos es true
-    sizeBoardX: number, // Cantidad de columnas a lo alto del tablero
-    sizeBoardY: number, // Cantidad de columnas a lo ancho del tablero
-    sizeMatrizX: number,
-    sizeMatrizY: number,
-    cellSize?: number, // tamaño en px de cada celda
-    pointsWhitePlayer: number,
-    pointsBlackPlayer: number,
-    cantDiscPerPlayer: number,
-    timePlayer: Object | 'white' | 'black', // Blanco o Negro, es el jugador en turno
-    selectedDisc: Pawn | null, // Disco que haas sido seleccionado
-    availablePlaces: number|boolean[],
-    winPlayer: null | TyColor
-}
+import {IActionCreator, IState} from "src/ts/interfaces";
+import {TMemo, TPlayer, TSelDisc} from "../ts/types";
 
 
 const sizeBoardX:number = 8 // Cantidad de columnas a lo alto del tablero
 const sizeBoardY:number = 10 // Cantidad de columnas a lo ancho del tablero
-const cellSize:number = 70 // tamaño en px de cada celda
 
 
 const board = new Board(sizeBoardX, sizeBoardY);
@@ -54,42 +38,36 @@ board.memo[1][2] = new Pawn('black',new Coordinate(1,2))
 const initialState:IState = {
     memo: board.memo,
     keepMov: false,
-    sizeBoardX: board.sizeX,
-    sizeBoardY: board.sizeY,
-    sizeMatrizX: board.matrixSizeX,
-    sizeMatrizY: board.matrixSizeY,
-    cellSize,
     pointsWhitePlayer: 0,
     pointsBlackPlayer: 0,
-    timePlayer: 'white',
-    cantDiscPerPlayer: board.cantDiscPerPlayer,
+    playerTurn: 'white',
     selectedDisc: null,
     availablePlaces: board.avPlaces,
     winPlayer: null
 }
 const useBoard = () => {
-    const [state, dispatch] = useReducer(BoardReducer, initialState);
+    const [state, dispatch]:[IState, any] = useReducer(BoardReducer, initialState);
 
-    const actionsDispatch = {
+    const actionsDispatch:IActionCreator = {
         setAvPlaces: (payload:any[]) => {
             dispatch({
                 type: SET_AVAILABLE_PLACES,
                 payload: payload,
             });
         },
-        setSelectedDisc: (payload:Pawn|King|null) => {
+        setSelectedDisc: (payload:TSelDisc) => {
             dispatch({
                 type: SET_SELECTED_DISC,
                 payload: payload,
             });
         },
-        setPlayerTurn: (payload:'white'|'black') => {
+        setPlayerTurn: (payload:TPlayer) => {
             dispatch({
                 type: SET_PLAYER_TURN,
                 payload: payload,
             });
         },
-        setBoard: (payload:Pawn|King|0[]) => {
+        setBoard: (payload:TMemo) => {
             dispatch({
                 type: SET_BOARD_MOV,
                 payload: payload,

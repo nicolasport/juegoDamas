@@ -1,7 +1,7 @@
 import React from 'react';
  import useBoard from 'src/hook/UseBoard';
 import BoardContext from 'src/context/BoardContext';
-import {Coordinate, Pawn, King} from "../logicGameClases/gameLogicClass";
+import {Coordinate, Pawn, King} from "src/class/gameLogicClass";
 
 
 const BoardState = (props:any) => {
@@ -10,13 +10,13 @@ const BoardState = (props:any) => {
 
 
     const endTurn = (keepMov: boolean) => {
-        // avaliablePlaces
+        // reset avaliablePlaces
         actionsDispatch.setAvPlaces(board.get_emptyAvPlaces())
 
         if (!keepMov) {
             // change player
             let playerToPlay = null;
-            if (state.timePlayer === 'white') {
+            if (state.playerTurn === 'white') {
                 playerToPlay = 'black';
             } else {
                 playerToPlay = 'white';
@@ -31,8 +31,8 @@ const BoardState = (props:any) => {
         }
     };
 
-    const checkPlayerTurn = (piece: Pawn) => {
-        if(piece.color === state.timePlayer){
+    const checkPlayerTurn = (piece: Pawn | King) => {
+        if(piece.color === state.playerTurn){
             // Resetea los lugares de movimiento
             actionsDispatch.setAvPlaces(board.avPlaces)
             // Sube al estado el disco seleccionado
@@ -44,7 +44,7 @@ const BoardState = (props:any) => {
     }
 
     const checkMovement = (piece: Pawn | King) => {
-        let avPlaces:any = []
+        let avPlaces: Array <0|true>
 
         avPlaces = board.checkAvPlaces(piece)
 
@@ -53,36 +53,33 @@ const BoardState = (props:any) => {
 
     const movDisc = (newPosition: Coordinate) => {
         const { selectedDisc } = state;
-        const eatEnemy = board.eatEnemy(selectedDisc, newPosition)
+        const isEatEnemy = board.eatEnemy(selectedDisc, newPosition)
+
         // Borra el disco de la posicion anterior y Mueve el disco a su nueva posicion
         board.movPiece(selectedDisc, newPosition)
 
         let keepMov = false
         //Check if te cell to mov is the end of Board for Pawn
         if(selectedDisc.rol === 'Pawn' && board.checkArriveEndCellOfBoard(newPosition)){
-            //convert to King
-            board.memo[newPosition.x][newPosition.y] = new King(selectedDisc.color, newPosition)
+            //Convert to King
+            board.converToKing(selectedDisc)
         }else{
             //Check if can eat again
-            if(eatEnemy){
+            if(isEatEnemy){
                 if(board.checkEatAgain(selectedDisc)){
                     keepMov = true
                 }
             }
         }
 
-        //verifica que puedan moverse las fichas del enemigo
-        console.log("-> board.checkAllPiecesCantMove(state.timePlayer)", board.checkAllPiecesCantMove(state.timePlayer)=== 0);
-        if(board.checkAllPiecesCantMove(state.timePlayer) === 0){
-            console.log("PLAYER WIN", state.timePlayer)
-            actionsDispatch.setWinPlayer(state.timePlayer)
+        console.log("-> board.checkAllPiecesCantMove(state.playerTurn)", board.getQtyOfEnemyPiecesCantMov(state.playerTurn)=== 0);
+        if(board.getQtyOfEnemyPiecesCantMov(state.playerTurn) === 0){
+            actionsDispatch.setWinPlayer(state.playerTurn)
         }
-        if(eatEnemy){
-            actionsDispatch.addPlayerPoints(selectedDisc.color)
-        }
-        // Adhiere el movimiento al estado
-        actionsDispatch.setBoard(board.memo)
+        if(isEatEnemy) actionsDispatch.addPlayerPoints(selectedDisc.color)
 
+        // Adhiere el movimiento al estado memo y keepMov
+        actionsDispatch.setBoard(board.memo)
         actionsDispatch.setKeepMov(keepMov)
 
         endTurn(keepMov);
@@ -92,19 +89,15 @@ const BoardState = (props:any) => {
 
 
     return (
-        <BoardContext.Provider key="board.state" value={
+        <BoardContext.Provider value={
             {
                 memo: board.memo,
-                sizeBoardX: state.sizeBoardX,
-                sizeBoardY: state.sizeBoardY,
-                cellSize: state.cellSize,
-                timePlayer: state.timePlayer,
+                playerTurn: state.playerTurn,
                 selectedDisc: state.selectedDisc,
                 availablePlaces: state.availablePlaces,
-                pointsWhitePlayer: state.pointsWhitePlayer, //TODO corregir
-                pointsBlackPlayer: state.pointsBlackPlayer, //TODO corregir
-                keepMov: false,
-                cantDiscPerPlayer: 0, //TODO corregir
+                pointsWhitePlayer: state.pointsWhitePlayer,
+                pointsBlackPlayer: state.pointsBlackPlayer,
+                keepMov: state.keepMov,
                 board,
                 checkPlayerTurn,
                 checkMovement,

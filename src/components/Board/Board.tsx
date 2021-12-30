@@ -3,24 +3,23 @@ import Cell from 'src/components/Cell';
 import Disc from 'src/components/Disc';
 import * as Style from 'src/components/styleComponents/Global.style'
 import BoardContext from "src/context/BoardContext";
-import {Pawn, King, Coordinate} from "src/logicGameClases/gameLogicClass";
+import {Coordinate} from "src/class/gameLogicClass";
 import {PointsTable} from "src/components/PointsTable/PointsTable"
+import {TMemo} from "src/ts/types"
 
 export const Board = () => {
     const {
-        sizeBoardY,
-        sizeBoardX,
-        cellSize,
+        board,
         memo,
         selectedDisc,
         checkMovement,
         keepMov,
     } = useContext(BoardContext) ;
     const checkMovementRef = useRef(checkMovement!) //only to quit warning dependency []
-
+    const {sizeX:sizeBoardX, sizeY:sizeBoardY, cellSize} = board!
     useEffect(()=> {
         if(selectedDisc !== null){
-            checkMovementRef.current(selectedDisc, keepMov)
+            checkMovementRef.current(selectedDisc!)
         }
     }, [selectedDisc, checkMovementRef,keepMov])
 
@@ -37,8 +36,8 @@ export const Board = () => {
                          width={sizeBoardY! * cellSize!}
                          height={sizeBoardX! * cellSize!}
             >
-                {memo!.map((row: [], x) =>
-                    row.map((cellValue: 0 | Pawn | King, y: number) =>
+                {memo!.map((row: TMemo[], x: number) =>
+                    row.map((cellValue: TMemo, y: number) =>
                         <div key={`Cell>${x}-${y}`}>
                             <Cell
                                 cellCoordinate={{x: x, y: y}}

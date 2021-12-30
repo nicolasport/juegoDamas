@@ -7,10 +7,10 @@ import {
     SET_WHITE_POINTS,
     SET_BLACK_POINTS, SET_WIN_PLAYER,
 } from 'src/context/actionsTypes';
+import {IAction, IState} from "../ts/interfaces";
 
 
-// ! TODO @param state and action are type any
-const reducer = (state:any, action:any) => {
+const reducer = (state:IState, action:IAction) => {
   const { payload, type } = action;
 
   switch (type) {
@@ -27,9 +27,8 @@ const reducer = (state:any, action:any) => {
     case SET_PLAYER_TURN:
       return {
         ...state,
-        timePlayer: payload,
+        playerTurn: payload,
       };
-
     case SET_BOARD_MOV:
       return {
         ...state,
@@ -50,7 +49,7 @@ const reducer = (state:any, action:any) => {
         ...state,
         pointsBlackPlayer: state.pointsBlackPlayer + 1,
       };
-      case SET_WIN_PLAYER:
+    case SET_WIN_PLAYER:
       return {
         ...state,
         winPlayer: payload,

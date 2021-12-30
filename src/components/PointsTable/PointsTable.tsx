@@ -3,12 +3,12 @@ import BoardContext from "../../context/BoardContext";
 
 
 export const PointsTable = () => {
-    const {winPlayer, pointsWhitePlayer, pointsBlackPlayer, timePlayer } = useContext(BoardContext)
+    const {winPlayer, pointsWhitePlayer, pointsBlackPlayer, playerTurn } = useContext(BoardContext)
     return (
         winPlayer === null ?
             <div style={{display: "block", marginTop: "60px"}}>
                 <div>
-                    <h1>Player's turn: {timePlayer!.toUpperCase()}</h1>
+                    <h1>Player's turn: {playerTurn!.toUpperCase()}</h1>
                     <h1>Points of White Player: {pointsWhitePlayer}</h1>
                     <h1>Points of Black Player: {pointsBlackPlayer}</h1>
                 </div>
@@ -19,7 +19,7 @@ export const PointsTable = () => {
                     WIN PLAYER IS: {winPlayer!.toUpperCase()}
                 </h1>
                 <div>
-                    <h1>Player's turn: {timePlayer!.toUpperCase()}</h1>
+                    <h1>Player's turn: {playerTurn!.toUpperCase()}</h1>
                     <h1>Points of White Player: {pointsWhitePlayer}</h1>
                     <h1>Points of Black Player: {pointsBlackPlayer}</h1>
                 </div>
